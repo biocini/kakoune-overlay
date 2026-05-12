@@ -1,0 +1,78 @@
+{
+  "nodes": {
+    "kak-tree-sitter-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778024705,
+        "narHash": "sha256-+bu5Z6bntJYQ3x/NdBiMeZ4mnhLqFoF1jcUh422FMPQ=",
+        "owner": "~hadronized",
+        "repo": "kak-tree-sitter",
+        "rev": "e4e1d270129c985cbf2a39e23ef1e41323bfc84e",
+        "type": "sourcehut"
+      },
+      "original": {
+        "owner": "~hadronized",
+        "repo": "kak-tree-sitter",
+        "type": "sourcehut"
+      }
+    },
+    "kakoune-lsp-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778319049,
+        "narHash": "sha256-1p1ojCeB8pt0DRyVa7JGHXu1uKgtvTOU8/OqLt+W6j4=",
+        "owner": "kakoune-lsp",
+        "repo": "kakoune-lsp",
+        "rev": "b090ff683302b3b5d79008d25d5a6c72489d0f55",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kakoune-lsp",
+        "repo": "kakoune-lsp",
+        "type": "github"
+      }
+    },
+    "kakoune-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778521601,
+        "narHash": "sha256-Kxg43O0cSvfyKktEk7SkjDBVmUfrQ08Ynp+lGfuYfhc=",
+        "owner": "mawww",
+        "repo": "kakoune",
+        "rev": "86b8ac1032ce195067a28a3857490270a74fa604",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mawww",
+        "repo": "kakoune",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1778443072,
+        "narHash": "sha256-zi7/fsqM/kFdNuED//4WOCUtezGtKKqRNORjMvfwjnA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "da5ad661ba4e5ef59ba743f0d112cbc30e474f32",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "kak-tree-sitter-src": "kak-tree-sitter-src",
+        "kakoune-lsp-src": "kakoune-lsp-src",
+        "kakoune-src": "kakoune-src",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
