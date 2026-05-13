@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+SCRIPTPATH="$(cd "$(dirname "$0")"; pwd -P)"
+cd "$SCRIPTPATH"
+
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "$TMPDIR"' EXIT
+
+manifest="manifest.json"
+
+# Read plugin names from manifest
+plugins=$(jq -r 'keys[]' "$manifest")
+
+for plugin in $plugins; do
+    meta=$(jq --arg p "$plugin" '.[$p]' "$manifest")
+    type=$(echo "$meta" | jq -r '.type')
+
+    if [ "$type" = "github" ]; then
+        owner=$(echo "$meta" | jq -r '.owner')
+        repo=$(echo "$meta" | jq -r '.repo')
+        echo "Updating $owner/$repo"
+
+        commit_sha=$(curl -s "https://api.github.com/repos/$owner/$repo/commits/HEAD" | jq -r '.sha')
+        version_date=$(curl -s "https://api.github.com/repos/$owner/$repo/commits/$commit_sha" | jq -r '.commit.committer.date' | cut -dT -f1)
+        digest=$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$commit_sha.tar.gz")
+
+        jq --arg p "$plugin" \
+           --arg rev "$commit_sha" \
+           --arg sha256 "$digest" \
+           --arg version "$version_date" \
+           '.[$p].rev = $rev | .[$p].sha256 = $sha256 | .[$p].version = $version' \
+           "$manifest" > "$TMPDIR/manifest.json"
+        mv "$TMPDIR/manifest.json" "$manifest"
+
+    elif [ "$type" = "gitlab" ]; then
+        owner=$(echo "$meta" | jq -r '.owner')
+        repo=$(echo "$meta" | jq -r '.repo')
+        echo "Updating gitlab $owner/$repo"
+
+        commit_sha=$(curl -s "https://gitlab.com/api/v4/projects/$(printf '%s' "$owner/$repo" | jq -sRr @uri)/repository/commits?per_page=1" | jq -r '.[0].id')
+        version_date=$(curl -s "https://gitlab.com/api/v4/projects/$(printf '%s' "$owner/$repo" | jq -sRr @uri)/repository/commits/$commit_sha" | jq -r '.committed_date' | cut -dT -f1)
+        digest=$(nix-prefetch-url --unpack "https://gitlab.com/$owner/$repo/-/archive/$commit_sha/$repo-$commit_sha.tar.gz")
+
+        jq --arg p "$plugin" \
+           --arg rev "$commit_sha" \
+           --arg sha256 "$digest" \
+           --arg version "$version_date" \
+           '.[$p].rev = $rev | .[$p].sha256 = $sha256 | .[$p].version = $version' \
+           "$manifest" > "$TMPDIR/manifest.json"
+        mv "$TMPDIR/manifest.json" "$manifest"
+
+    elif [ "$type" = "git" ]; then
+        url=$(echo "$meta" | jq -r '.url')
+        echo "Updating $url"
+
+        info=$(nix-prefetch-git --no-deepClone "$url")
+        rev=$(echo "$info" | jq -r '.rev')
+        sha256=$(echo "$info" | jq -r '.sha256')
+        version_date=$(echo "$info" | jq -r '.date' | cut -dT -f1)
+
+        jq --arg p "$plugin" \
+           --arg rev "$rev" \
+           --arg sha256 "$sha256" \
+           --arg version "$version_date" \
+           '.[$p].rev = $rev | .[$p].sha256 = $sha256 | .[$p].version = $version' \
+           "$manifest" > "$TMPDIR/manifest.json"
+        mv "$TMPDIR/manifest.json" "$manifest"
+    fi
+done

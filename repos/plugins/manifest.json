@@ -1,0 +1,50 @@
+{
+  "active-window-kak": {
+    "type": "github",
+    "owner": "greenfork",
+    "repo": "active-window.kak",
+    "rev": "36bf0364eed856a52cddf274072e9f255902c0ee",
+    "sha256": "1fv1cp9q212gamf9z2papl5xcl2w31fpcmbgdzbxcxdl1pvfsqp8",
+    "version": "2022-11-14"
+  },
+  "auto-pairs-kak": {
+    "type": "github",
+    "owner": "alexherbo2",
+    "repo": "auto-pairs.kak",
+    "rev": "e812ee6006b1c3d8c9afa45a0a90d28714636f81",
+    "sha256": "017x9g89q0w60y561xhigc0f14ryp4phh1hdna847ca5lvmbxksp",
+    "version": "2024-12-02"
+  },
+  "byline-kak": {
+    "type": "github",
+    "owner": "evanrelf",
+    "repo": "byline.kak",
+    "rev": "a27d109b776c60e11752eeb3207c989a5e157fc0",
+    "sha256": "121dxd65ml65ablkvdxj0rib3kvfwss0pv943bgl3nq35ag19b81",
+    "version": "2023-02-27"
+  },
+  "connect-kak": {
+    "type": "github",
+    "owner": "kakounedotcom",
+    "repo": "connect.kak",
+    "rev": "a536605a208149eed58986bda54f3dda215dfe61",
+    "sha256": "1svw64zk28sn271vjyzvq21zaln13vnx59rxnxah6adq8n5nkr4a",
+    "version": "2021-02-24"
+  },
+  "fzf-kak": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "fzf.kak",
+    "rev": "b2a8841716121f187b142585491658d554c1112e",
+    "sha256": "03n74s9mfrl17cdy5h131bxa3n29n9dfrg6qwp2d17qc3b7ixv82",
+    "version": "2026-05-06"
+  },
+  "kakboard": {
+    "type": "github",
+    "owner": "lePerdu",
+    "repo": "kakboard",
+    "rev": "5759dcc5af593ff88a7faecc41a8f549ec440771",
+    "sha256": "0g8q0rkdnzsfvlibjd1zfcapngfli5aa3qrgmkgdi24n9ad8wzvh",
+    "version": "2022-04-02"
+  }
+}
