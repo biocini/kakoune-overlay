@@ -1,3 +1,8 @@
+---
+name: kakoune-overlay-security
+description: Perform security review of kakoune plugin source code before merging into the overlay. Scan .kak files for outbound network calls, sensitive data exfiltration, obfuscated shell, writes to sensitive paths, and suspicious repo metadata. Use when vetting newly discovered plugins or reviewing plugin updates for malicious patterns.
+---
+
 # Security Vetting for Kakoune Plugins
 
 This skill documents how to perform a security review of kakoune plugin

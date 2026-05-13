@@ -1,3 +1,8 @@
+---
+name: kakoune-overlay-deps
+description: Add build-time path rewrites (postInstall + substituteInPlace) for kakoune plugins whose .kak files contain hardcoded paths that won't resolve from the Nix store. Use when reviewing a new plugin or fixing a plugin that fails to find its bundled scripts/assets after installation.
+---
+
 # Adding Build-Time Overrides to Kakoune Plugins
 
 This skill documents how to add build-time path rewrites for plugins
