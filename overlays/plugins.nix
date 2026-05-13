@@ -109,7 +109,13 @@ let
 
   gitPlugins = lib.mapAttrs mkPlugin manifest;
 
+  # For plugins that exist in nixpkgs under a different name, also
+  # override the nixpkgs name so users can reference either.
+  nixpkgsOverrides = lib.mapAttrs' (ourName: nixpkgsName:
+    lib.nameValuePair nixpkgsName gitPlugins.${ourName}
+  ) nameMap;
+
 in
 {
-  kakounePlugins = super.kakounePlugins // gitPlugins;
+  kakounePlugins = super.kakounePlugins // gitPlugins // nixpkgsOverrides;
 }
