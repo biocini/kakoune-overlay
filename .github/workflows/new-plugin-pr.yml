@@ -1,0 +1,135 @@
+name: Propose new plugins
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  discover-and-propose:
+    name: Discover new plugins and open PR
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'biocini'
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Add kakoune-overlay cache
+        uses: cachix/cachix-action@v17
+        with:
+          name: kakoune-overlay
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Discover new plugins
+        id: discover
+        run: |
+          NEW_PLUGINS=$(./repos/plugins/discover)
+          COUNT=$(echo "$NEW_PLUGINS" | grep -c '^' || true)
+          if [ -z "$NEW_PLUGINS" ] || [ "$COUNT" -eq 0 ]; then
+            echo "No new plugins discovered."
+            echo "count=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "New plugins discovered ($COUNT):"
+          echo "$NEW_PLUGINS"
+
+      - name: Spend guard
+        if: steps.discover.outputs.count != '0'
+        run: |
+          COUNT="${{ steps.discover.outputs.count }}"
+          if [ "$COUNT" -gt 20 ]; then
+            echo "ERROR: $COUNT new plugins exceeds spend guard (20). Aborting."
+            exit 1
+          fi
+
+      - name: Install GitHub Copilot CLI
+        if: steps.discover.outputs.count != '0'
+        run: |
+          gh auth login --with-token <<< "${{ secrets.COPILOT_PAT }}"
+          gh extension install github/gh-copilot
+
+      - name: Run Copilot review
+        if: steps.discover.outputs.count != '0'
+        run: |
+          cat > /tmp/task.md << 'TASK_EOF'
+          You are given /tmp/new-plugins.json -- a JSON object of newly
+          discovered plugins in the same schema as
+          repos/plugins/manifest.json. For each plugin:
+
+          1. Merge its entry into repos/plugins/manifest.json, preserving
+             all existing entries and maintaining valid JSON.
+          2. Fetch the plugin's .kak source files from GitHub via curl
+             using the owner/repo/rev from the entry.
+          3. Check whether any .kak file contains a hardcoded path that
+             will not resolve correctly from the Nix store -- specifically
+             patterns like $kak_config/some-file, ~/.config/kak/..., or
+             paths constructed relative to the plugin source directory at
+             install time that point to a file that ships with the plugin.
+          4. If such a path exists and the target file is included in the
+             plugin's source tree, add an entry to
+             repos/plugins/overrides.nix with a postInstall block using
+             substituteInPlace to rewrite it to the correct
+             $out/share/kak/autoload/plugins/<name>/... path.
+          5. If no hardcoded paths requiring rewriting are found, do not
+             add an entry to overrides.nix.
+          6. Write the commit message to /tmp/msg.txt following AGENTS.md
+             conventions (feat(plugins) scope, two-paragraph body,
+             Generated-with trailer).
+          TASK_EOF
+          gh copilot suggest --target shell --non-interactive < /tmp/task.md \
+            || true
+
+      - name: Create branch and PR
+        if: steps.discover.outputs.count != '0'
+        run: |
+          TIMESTAMP=$(date -u +%Y%m%d-%H%M%S)
+          BRANCH="new-plugins-${TIMESTAMP}"
+          git checkout -b "$BRANCH"
+          git add repos/plugins/manifest.json \
+            repos/plugins/overrides.nix
+          if [ -f /tmp/msg.txt ]; then
+            git commit -F /tmp/msg.txt
+          else
+            cat > /tmp/fallback-msg.txt << 'MSG'
+            feat(plugins): add newly discovered plugins
+
+            Discovered new Kakoune plugins from GitHub topic search.
+
+            Generated-with: github-actions (copilot-assisted)
+            MSG
+            git commit -F /tmp/fallback-msg.txt
+          fi
+          git push -u origin "$BRANCH"
+
+          NEW_PLUGINS=$(./repos/plugins/discover)
+          BODY="# New Kakoune Plugins\n\n"
+          while IFS= read -r name; do
+            meta=$(jq --arg n "$name" '.[$n]' /tmp/new-plugins.json)
+            owner=$(echo "$meta" | jq -r '.owner')
+            repo=$(echo "$meta" | jq -r '.repo')
+            BODY="${BODY}### ${name} (${owner}/${repo})\n"
+            BODY="${BODY}- [ ] manifest entry looks correct (rev, sha256, branch)\n"
+            BODY="${BODY}- [ ] .kak source reviewed for hardcoded paths "
+            BODY="${BODY}requiring store rewrites\n"
+            BODY="${BODY}- [ ] overrides.nix entry present only if a path "
+            BODY="${BODY}rewrite is genuinely needed\n"
+            BODY="${BODY}- [ ] nix flake check passes (CI)\n\n"
+          done <<< "$NEW_PLUGINS"
+
+          gh pr create \
+            --title "feat(plugins): add newly discovered plugins" \
+            --body "$BODY" \
+            --base master \
+            --head "$BRANCH"

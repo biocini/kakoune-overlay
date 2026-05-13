@@ -9,7 +9,7 @@ jobs:
   flake-inputs:
     name: Update flake inputs
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'lane-core'
+    if: github.repository_owner == 'biocini'
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +24,8 @@ jobs:
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Update flake inputs
         run: |
@@ -43,7 +44,7 @@ jobs:
     strategy:
       matrix:
         repo: ["core", "plugins"]
-    if: github.repository_owner == 'lane-core'
+    if: github.repository_owner == 'biocini'
     steps:
       - uses: actions/checkout@v4
 
@@ -58,7 +59,8 @@ jobs:
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Update sources
         run: |
@@ -69,3 +71,18 @@ jobs:
         run: |
           git pull --rebase --autostash
           git push
+
+  discover-new-plugins:
+    name: Discover and propose new plugins
+    needs: refresh-overlay
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'biocini'
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dispatch new-plugin-pr workflow
+        run: |
+          gh workflow run new-plugin-pr.yml \
+            --repo "${{ github.repository }}"
