@@ -54,33 +54,11 @@ let
     name: meta:
     let
       newSrc = fetchFromRepo name meta;
-      override = overrides.${name} or { deps = [ ]; };
-      deps = override.deps or [ ];
-      bins = override.bins or [ ];
+      override = overrides.${name} or { };
       customPostInstall = override.postInstall or "";
 
       nixpkgsName = nameMap.${name} or name;
       inNixpkgs = builtins.hasAttr nixpkgsName super.kakounePlugins;
-
-      # Symlink only the explicitly-listed binaries from deps into
-      # $out/share/kak/bin/.  The list is determined by reading the
-      # plugin's kak files and noting which bare commands appear in
-      # %sh{...} blocks.
-      symlinkBins = lib.optionalString (bins != [ ]) ''
-        mkdir -p $out/share/kak/bin
-        for dep in ${lib.concatMapStringsSep " " (d: lib.getBin d) deps}; do
-          for bin in ${lib.concatStringsSep " " bins}; do
-            if [ -e "$dep/bin/$bin" ] && [ ! -e "$out/share/kak/bin/$bin" ]; then
-              ln -sf "$dep/bin/$bin" "$out/share/kak/bin/$bin"
-            fi
-          done
-        done
-      '';
-
-      depPostInstall = lib.optionalString (bins != [ ] || customPostInstall != "") ''
-        ${symlinkBins}
-        ${customPostInstall}
-      '';
 
       homepage =
         meta.homepage or (
@@ -105,14 +83,15 @@ let
         };
       })
     else
-      # New plugin: build from scratch with dependency injection
+      # New plugin: build from scratch.  Only postInstall path rewrites
+      # are supported here — runtime binary deps are the user's
+      # responsibility via their Nix environment.
       buildKakounePluginFrom2Nix {
         pname = name;
         version = meta.version;
         src = newSrc;
-        propagatedBuildInputs = deps;
         meta.homepage = homepage;
-        postInstall = depPostInstall;
+        postInstall = customPostInstall;
       };
 
   gitPlugins = lib.mapAttrs mkPlugin manifest;

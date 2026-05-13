@@ -1,95 +1,88 @@
-# Adding Dependencies to Kakoune Plugins
+# Adding Build-Time Overrides to Kakoune Plugins
 
-This skill documents how to research and add external dependencies for
-plugins in the kakoune-overlay.
+This skill documents how to add build-time path rewrites for plugins
+in the kakoune-overlay.
 
 ## When to use
 
-Use when a newly-discovered plugin (or an existing one) calls external
-tools in `%sh{...}` blocks, compiles its own binary, or otherwise needs
-packages from nixpkgs.
+Use when a plugin contains **hardcoded paths** inside its `.kak` files
+that won't resolve correctly from the Nix store after installation.
+
+Common patterns that need rewriting:
+
+- `$kak_config/some-script.py` — path relative to user config, won't exist post-install
+- `~/.config/kak/...` — user home path, invalid in the store
+- Paths relative to the plugin's source directory that won't exist post-install
+
+## What NOT to track here
+
+**Runtime binary dependencies are NOT handled by this overlay.**
+
+Plugins that call external tools by bare name in `%sh{...}` blocks
+(e.g. `%sh{ git status }`, `%sh{ fzf }`) do NOT need entries in this
+file. Those binaries must be available in the user's login
+environment (via `home.packages`, `environment.systemPackages`, etc.).
+
+This is consistent with how nixpkgs itself handles `kakounePlugins` —
+no plugin derivation in nixpkgs specifies runtime binary deps.
 
 ## Workflow
 
-### 1. Discover which plugins need dependencies
+### 1. Check if the plugin has hardcoded paths
 
-For each new plugin in `repos/plugins/manifest.json`, check its source
-code for external tool usage:
-
-```bash
-# Quick check: grep for %sh blocks mentioning common tools
-curl -sL "https://github.com/$owner/$repo/raw/$branch/$repo.kak" | \
-  grep -E '%sh\{|\bfzf\b|\bgit\b|\blua\b|\bpython\b|\bnode\b'
-```
-
-Also read the README for documented dependencies.
-
-### 2. Check if plugin already exists in nixpkgs
+Read the plugin's main `.kak` file(s) and look for paths that assume a
+specific filesystem layout:
 
 ```bash
-nix-search kakounePlugins 2>/dev/null | grep "$plugin_name"
+curl -sL "https://raw.githubusercontent.com/$owner/$repo/$branch/$plugin.kak" | \
+  grep -E '\$kak_config|~/|\.\./'
 ```
 
-If it exists, **do not** create a custom derivation. The overlay will
-automatically use `overrideAttrs` to update nixpkgs' version. Only add
-to `repos/plugins/overrides.nix` if there are _additional_ dependencies
-not covered by nixpkgs' existing override.
+### 2. Check if the referenced file ships with the plugin
+
+If the path points to a file that is part of the plugin repo (e.g.
+`$kak_config/lean4-replace-abbreviations.py` ships in the plugin's
+`lean4/` directory), it can be rewritten to the Nix store path at
+build time.
 
 ### 3. Edit `repos/plugins/overrides.nix`
 
-Use the plugin's **normalized name** (as it appears in the manifest keys):
+Use the plugin's **normalized name** (as it appears in
+`repos/plugins/manifest.json` keys):
 
 ```nix
-{ pkgs }:
+{ _pkgs }:
 {
-  # No dependencies (explicitly vetted)
-  byline = { deps = []; };
-
-  # Symlink binaries into share/kak/bin/
-  fzf = { deps = [ pkgs.fzf ]; };
-
-  # Dependencies + custom postInstall for substituteInPlace
-  powerline = {
-    deps = [ pkgs.git ];
+  my-plugin = {
     postInstall = ''
-      substituteInPlace $out/share/kak/autoload/plugins/powerline/rc/modules/git.kak \
-        --replace ' git ' ' ${pkgs.git}/bin/git '
+      substituteInPlace $out/share/kak/autoload/plugins/my-plugin/rc.kak \
+        --replace '$kak_config/my-script.py' "$out/share/kak/autoload/plugins/my-plugin/my-script.py"
     '';
   };
 }
 ```
 
-**Entry types:**
-
-| Form                                     | Effect                                                                                                                                                  |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `{ deps = []; }`                         | Vetted: no external deps                                                                                                                                |
-| `{ deps = [ pkgs.X ]; }`                 | Symlinks useful binaries from `X/bin/` into `$out/share/kak/bin/`, adds to `propagatedBuildInputs` (noise like `idle`, `pydoc`, `*-config` is filtered) |
-| `{ deps = [...]; postInstall = "..."; }` | Same as above, plus custom `postInstall` script appended after symlink step                                                                             |
-
 ### 4. Verify the build
 
 ```bash
-nix flake check --all-systems
 nix build --impure --expr 'with (import <nixpkgs> { overlays = [ (import ./overlay.nix) ]; }); kakounePlugins.$plugin_name'
-ls -la result/share/kak/bin/  # verify symlinks
+grep -n 'my-script.py' result/share/kak/autoload/plugins/$plugin_name/*.kak
 ```
+
+Confirm the path has been rewritten to a Nix store path.
 
 ### 5. Commit
 
-Include the plugin name in the commit subject and list researched deps
-in the body.
+Include the plugin name in the commit subject and explain what path was
+rewritten.
 
 ## Rules
 
+- **Only `postInstall` with `substituteInPlace` (or equivalent) is
+  supported.** Do not add `deps`, `bins`, or any other fields.
+- **Use normalized names** matching `repos/plugins/manifest.json` keys.
+- **Missing plugins are treated as no-op.** Only add entries when a
+  path rewrite is actually needed.
 - **Always prefer nixpkgs' existing overrides.** The overlay's
   `mkPlugin` checks `builtins.hasAttr name super.kakounePlugins` and
   uses `overrideAttrs` when a plugin already exists in nixpkgs.
-- **Use normalized names** matching `repos/plugins/manifest.json` keys.
-- **Empty `deps` means "vetted, no deps."** Don't omit the entry;
-  explicitly mark it as `{ deps = []; }` to signal the plugin has been
-  reviewed.
-- **Rare case — compiled plugins:** If a plugin builds its own binary
-  (e.g. a Rust crate or C program), it may need a full custom
-  derivation. Consider adding it as a top-level package in
-  `overlays/pkgs.nix` instead of in the plugin overlay.
