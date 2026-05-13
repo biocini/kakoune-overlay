@@ -61,10 +61,18 @@ let
       nixpkgsName = nameMap.${name} or name;
       inNixpkgs = builtins.hasAttr nixpkgsName super.kakounePlugins;
 
-      # Symlink each dependency's bin/ into the plugin's share/kak/bin/
+      # Symlink dependency binaries into the plugin's share/kak/bin/.
+      # Skips common noise binaries (config scripts, docs, IDE launchers)
+      # so that only useful executables end up on kakoune's PATH.
       symlinkDeps = lib.concatMapStrings (dep: ''
         for bin in ${lib.getBin dep}/bin/*; do
-          [ -e "$bin" ] && ln -sf "$bin" "$out/share/kak/bin/"
+          [ -e "$bin" ] || continue
+          base=$(basename "$bin")
+          # Skip common noise binaries
+          case "$base" in
+            idle*|pydoc*|*-config|*.pyc|*.pyo|2to3|easy_install*|pip*) continue ;;
+          esac
+          ln -sf "$bin" "$out/share/kak/bin/$base"
         done
       '') deps;
 
@@ -111,8 +119,8 @@ let
 
   # For plugins that exist in nixpkgs under a different name, also
   # override the nixpkgs name so users can reference either.
-  nixpkgsOverrides = lib.mapAttrs' (ourName: nixpkgsName:
-    lib.nameValuePair nixpkgsName gitPlugins.${ourName}
+  nixpkgsOverrides = lib.mapAttrs' (
+    ourName: nixpkgsName: lib.nameValuePair nixpkgsName gitPlugins.${ourName}
   ) nameMap;
 
 in

@@ -121,7 +121,11 @@
 
   # 2025-01-31 — GDB debugging integration (calls gdb, perl, socat)
   kakoune-gdb = {
-    deps = [ pkgs.gdb pkgs.perl pkgs.socat ];
+    deps = [
+      pkgs.gdb
+      pkgs.perl
+      pkgs.socat
+    ];
   };
 
   # 2025-07-24 — tag sidebar (calls ctags, readtags, awk)
