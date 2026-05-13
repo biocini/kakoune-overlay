@@ -1,33 +1,12 @@
 {
-  description = "Kakoune overlay — nightly git builds of kakoune, kakoune-lsp, kak-tree-sitter";
+  description = "Kakoune overlay — nightly git builds of kakoune and its ecosystem";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
-    kakoune-src = {
-      url = "github:mawww/kakoune";
-      flake = false;
-    };
-
-    kakoune-lsp-src = {
-      url = "github:kakoune-lsp/kakoune-lsp";
-      flake = false;
-    };
-
-    kak-tree-sitter-src = {
-      url = "sourcehut:~hadronized/kak-tree-sitter";
-      flake = false;
-    };
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      kakoune-src,
-      kakoune-lsp-src,
-      kak-tree-sitter-src,
-    }:
+    { self, nixpkgs }:
     let
       inherit (nixpkgs) lib;
       systems = [
@@ -39,9 +18,7 @@
       forAllSystems = lib.genAttrs systems;
     in
     {
-      overlays.default = import ./overlay.nix {
-        inherit kakoune-src kakoune-lsp-src kak-tree-sitter-src;
-      };
+      overlays.default = import ./overlay.nix;
 
       packages = forAllSystems (
         system:

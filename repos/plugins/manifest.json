@@ -1,37 +1,13 @@
 {
-  "active-window-kak": {
+  "match": {
     "type": "github",
-    "owner": "greenfork",
-    "repo": "active-window.kak",
-    "rev": "36bf0364eed856a52cddf274072e9f255902c0ee",
-    "sha256": "1fv1cp9q212gamf9z2papl5xcl2w31fpcmbgdzbxcxdl1pvfsqp8",
-    "version": "2022-11-14"
+    "owner": "kmafeni04",
+    "repo": "match.kak",
+    "rev": "84e18c1bb866985168d890b3d075d7fab74598d6",
+    "sha256": "1d3fyv5r16cl324z9c8fwk6j87zfhr83c0xid8difc6hv9583lkf",
+    "version": "2026-05-09"
   },
-  "auto-pairs-kak": {
-    "type": "github",
-    "owner": "alexherbo2",
-    "repo": "auto-pairs.kak",
-    "rev": "e812ee6006b1c3d8c9afa45a0a90d28714636f81",
-    "sha256": "017x9g89q0w60y561xhigc0f14ryp4phh1hdna847ca5lvmbxksp",
-    "version": "2024-12-02"
-  },
-  "byline-kak": {
-    "type": "github",
-    "owner": "evanrelf",
-    "repo": "byline.kak",
-    "rev": "a27d109b776c60e11752eeb3207c989a5e157fc0",
-    "sha256": "121dxd65ml65ablkvdxj0rib3kvfwss0pv943bgl3nq35ag19b81",
-    "version": "2023-02-27"
-  },
-  "connect-kak": {
-    "type": "github",
-    "owner": "kakounedotcom",
-    "repo": "connect.kak",
-    "rev": "a536605a208149eed58986bda54f3dda215dfe61",
-    "sha256": "1svw64zk28sn271vjyzvq21zaln13vnx59rxnxah6adq8n5nkr4a",
-    "version": "2021-02-24"
-  },
-  "fzf-kak": {
+  "fzf": {
     "type": "github",
     "owner": "andreyorst",
     "repo": "fzf.kak",
@@ -39,12 +15,564 @@
     "sha256": "03n74s9mfrl17cdy5h131bxa3n29n9dfrg6qwp2d17qc3b7ixv82",
     "version": "2026-05-06"
   },
-  "kakboard": {
+  "kak-tree-sitter-helix": {
     "type": "github",
-    "owner": "lePerdu",
-    "repo": "kakboard",
-    "rev": "5759dcc5af593ff88a7faecc41a8f549ec440771",
-    "sha256": "0g8q0rkdnzsfvlibjd1zfcapngfli5aa3qrgmkgdi24n9ad8wzvh",
-    "version": "2022-04-02"
+    "owner": "igor-ramazanov",
+    "repo": "kak-tree-sitter-helix",
+    "rev": "c5b2c001c5e75f194f97062829032f989f0c1a06",
+    "sha256": "04p7hrydww15hxwmf6an1w7hqa2v74ghm4ygk6ki9dqywaygbq1w",
+    "version": "2026-05-03"
+  },
+  "popup": {
+    "type": "github",
+    "owner": "enricozb",
+    "repo": "popup.kak",
+    "rev": "54a92fcbfff5a9647b7de8b7a8167373aded7fce",
+    "sha256": "143kps081ac5dvgn92lhbq3k85slf0s2vwsjaqq9p97lvvy6wags",
+    "version": "2026-04-30"
+  },
+  "kak-duras": {
+    "type": "github",
+    "owner": "sduras",
+    "repo": "kak-duras",
+    "rev": "56fba89e656adfc00ceb3f5f0a69fec4de6cc852",
+    "sha256": "1czfvvsqnfwxi3b6l3ihgd3yx86f0dm8nmzqfxfgmi2xpr1sfani",
+    "version": "2026-04-29"
+  },
+  "giallo": {
+    "type": "github",
+    "owner": "Yukaii",
+    "repo": "giallo.kak",
+    "rev": "b7148ba78d0b2f4b73450107d0cb6496acf94eea",
+    "sha256": "1zwzwhsarl8yjp35231zyp1d00qx9v1v3awpfb71d45ii41zcf5s",
+    "version": "2026-04-21"
+  },
+  "kakeidoscope": {
+    "type": "github",
+    "owner": "thoughtpatterns",
+    "repo": "kakeidoscope",
+    "rev": "15335bcf8e36a9df1fe0a7e97b090f7fa017bb82",
+    "sha256": "0mj35llnmwzj5xy5vjhbgl8n1wiha783d2v18pl41cg8rc38ay16",
+    "version": "2026-04-18"
+  },
+  "kakounicode": {
+    "type": "github",
+    "owner": "AJChapman",
+    "repo": "kakounicode",
+    "rev": "a037ee66a17086ea0abaadbdcb2fd2ddaee04be3",
+    "sha256": "09kzpq12kdpf1jvjs34i3n32nmdmphwvciq5f2646m7sbrr702bv",
+    "version": "2026-04-13"
+  },
+  "kakoune-focus": {
+    "type": "github",
+    "owner": "caksoylar",
+    "repo": "kakoune-focus",
+    "rev": "0e0d640b38bad1c7e386cf792c5b7c286a0a38d1",
+    "sha256": "1zp96wgl7kbgnl2q4zjx23m2c42hl5zp1npqi2hikfzcz4cd4q2n",
+    "version": "2026-04-13"
+  },
+  "kakoune-smooth-scroll": {
+    "type": "github",
+    "owner": "caksoylar",
+    "repo": "kakoune-smooth-scroll",
+    "rev": "4910a4ba7af7e53c839169cfd3aa93b260a0d938",
+    "sha256": "1kkvvykhaq3v6qf5dwdsaw5d5jb05l3fbh5g07ng284fx4hc8716",
+    "version": "2026-04-13"
+  },
+  "yummy": {
+    "type": "github",
+    "owner": "Hjagu09",
+    "repo": "yummy.kak",
+    "rev": "083b83fc038dfa2a1428e951ea6746f6bf30a473",
+    "sha256": "1aywj6p0cggv9adiv6b67fds0627phgqd92bhk9n06anpg4mgyjn",
+    "version": "2026-04-12"
+  },
+  "highlighters": {
+    "type": "github",
+    "owner": "thacuber2a03",
+    "repo": "highlighters.kak",
+    "rev": "564c4fa77bf8679e238b5e1d648ee996be6ea0e6",
+    "sha256": "066yj438wm1hpp5v1r1ll5jbz3wpjdsahxywamdm4lxv2f7p2wnj",
+    "version": "2026-04-04"
+  },
+  "eak": {
+    "type": "github",
+    "owner": "ftonneau",
+    "repo": "eak",
+    "rev": "14ce39706e37d06894b82a60d2535a0488da647e",
+    "sha256": "00yiv4gidyi1972nb4zmfxzl9ivwp751kvyj8psfs8hfgy6k5dk6",
+    "version": "2026-03-31"
+  },
+  "kalolo": {
+    "type": "github",
+    "owner": "nojhan",
+    "repo": "kalolo",
+    "rev": "82e29b6f4864c653a69d2a10c22f5184c7edfcf0",
+    "sha256": "1hy6wq58lx3ih020c0izsc121sjr1709q96f9r91gdzab1k1pxpc",
+    "version": "2026-03-28"
+  },
+  "kakoune-themes": {
+    "type": "github",
+    "owner": "anhsirk0",
+    "repo": "kakoune-themes",
+    "rev": "f419698fa4c0d4e73e8f1ff006d50968f5e43ca8",
+    "sha256": "0cfpnx5kzl049my8a38a3wjgcy1h8ahsbv0wycvmm4xah97mrlz1",
+    "version": "2026-03-02"
+  },
+  "kak-subvert": {
+    "type": "github",
+    "owner": "your-tools",
+    "repo": "kak-subvert",
+    "rev": "164f0be402cb2bc5385fed3bde9c0c8c2ebbcef2",
+    "sha256": "1hcibgwl99gv0gkza5nykf0zwvdvl3s09vj0yc9pm7pzbj6lvzas",
+    "version": "2026-02-20"
+  },
+  "symbol-search": {
+    "type": "github",
+    "owner": "enricozb",
+    "repo": "symbol-search.kak",
+    "rev": "25636f6eb220f93df496ecb7fc54604476409f6c",
+    "sha256": "1sxy9rmw3s27lc50q4vzmsgg4zn696fivskpdigq8s2vjqy8jr1p",
+    "version": "2026-02-17"
+  },
+  "gemi2": {
+    "type": "github",
+    "owner": "eko234",
+    "repo": "gemi2",
+    "rev": "9ea3f96a7a4b79b0739d16a5e0a1903e9d092420",
+    "sha256": "06sx8kyzgifflcjj6qsryy4prkqgyp0sivrh3c7661x327szpmdn",
+    "version": "2026-02-13"
+  },
+  "kakoune-git-mode": {
+    "type": "github",
+    "owner": "jordan-yee",
+    "repo": "kakoune-git-mode",
+    "rev": "05aebefba0b8f4ecc60d7172c30d941c6b031e34",
+    "sha256": "05nkr6fk2zik1ksqij7s4h2lq8041ba8b3q0kxbfb6f6fdpq3axj",
+    "version": "2026-02-06"
+  },
+  "objetiva": {
+    "type": "github",
+    "owner": "gustavo-hms",
+    "repo": "objetiva",
+    "rev": "633e6a1b513de03457d40694349e1314168658c1",
+    "sha256": "0gdzkhfvfqhs818617d0vh8nn9l596vk248nmxsm9qz36sjm7d6n",
+    "version": "2026-01-24"
+  },
+  "kak-one": {
+    "type": "github",
+    "owner": "raiguard",
+    "repo": "kak-one",
+    "rev": "28761bc299b1a55425ebfbb17bdc810bff2a2ca2",
+    "sha256": "15ib0xkbwxn8hlkjg2m7hqf3xcvq940cqi12vlidy8m1xx8xmf4f",
+    "version": "2025-12-28"
+  },
+  "kak-harpoon": {
+    "type": "github",
+    "owner": "raiguard",
+    "repo": "kak-harpoon",
+    "rev": "afd5f54c6ab90aa01dab99c0e0ca555fc63b7db3",
+    "sha256": "1mnlvz2x313f6x29jk58kf21yla5l3wllk57ckky8qmhc0ybryf4",
+    "version": "2025-12-28"
+  },
+  "kak-jj": {
+    "type": "github",
+    "owner": "OldUser101",
+    "repo": "kak-jj",
+    "rev": "fb334a0a955be231269ee17d75005104e295ab14",
+    "sha256": "0j4wffh5fi4lgcxz69w12bbwjsncb83mfpk788aw024p9709gyf2",
+    "version": "2025-11-12"
+  },
+  "kak-wl-clipboard": {
+    "type": "github",
+    "owner": "OldUser101",
+    "repo": "kak-wl-clipboard",
+    "rev": "e07b0b58cf9d8548271b5bb52e7e6e40efec2bd9",
+    "sha256": "00iqdz71aphm8k0b897mbpxhj84r6fl8j901jklcv7ardznrhb03",
+    "version": "2025-12-20"
+  },
+  "xxd": {
+    "type": "github",
+    "owner": "damianoognissanti",
+    "repo": "xxd.kak",
+    "rev": "86fc5d477f4d56f4d285e98630df4c49a45ae109",
+    "sha256": "0bn7gw4d5c91fwwswvxgynbcb0fa61z43an77kxzmlp2dcwcl0ma",
+    "version": "2025-12-16"
+  },
+  "lean4": {
+    "type": "github",
+    "owner": "Lqnk4",
+    "repo": "lean4.kak",
+    "rev": "5c2696fd7716c15ccf3fa84322fd291f427e16f2",
+    "sha256": "0yhmi3rx18c8z9fh5265hbbjiylzvpfy7mgcy98xxwd2ww78ybhv",
+    "version": "2025-12-12"
+  },
+  "kakoune-pokemon": {
+    "type": "github",
+    "owner": "vbauerster",
+    "repo": "kakoune-pokemon",
+    "rev": "a979c8111dc8b7c6c8c319c9959b3e0767b73979",
+    "sha256": "1gq2k3rwsi770d78kndac3jkixi2a6cazbavn7b9q9dzhyn3lblk",
+    "version": "2025-12-10"
+  },
+  "almoxarife": {
+    "type": "github",
+    "owner": "gustavo-hms",
+    "repo": "almoxarife",
+    "rev": "dfcabf5a2fff79aa87da98905ae731f71e0d7800",
+    "sha256": "0qx3ng5cvf34sjbk0v6fcwfqvba2x94f8yr3i5sclx2jls0ly2mj",
+    "version": "2025-12-05"
+  },
+  "peneira": {
+    "type": "github",
+    "owner": "gustavo-hms",
+    "repo": "peneira",
+    "rev": "3162b4fa2a665275278feb2e7eea141a97995c1b",
+    "sha256": "1f6xh9c9b5n68mw7bnipsh6jjrn28g3lz2277rwbi7f2z7g8l9db",
+    "version": "2025-12-04"
+  },
+  "luar": {
+    "type": "github",
+    "owner": "gustavo-hms",
+    "repo": "luar",
+    "rev": "e08e1ce7a8e9c9341adf7121a46b9170aea3334b",
+    "sha256": "1ygf1yn56a4h4fvx8zy6s70igb6lc57klh5j1c59lb41z72mv6bh",
+    "version": "2025-12-04"
+  },
+  "text-file-terminal": {
+    "type": "github",
+    "owner": "losnappas",
+    "repo": "text-file-terminal",
+    "rev": "d62afec77c946ff271bc349b19e0c84ca80f58f9",
+    "sha256": "0kz8s9nrczrn36nhzbbk3ywsbjifzw5pcp1g2g3gc97c9dcqqg1m",
+    "version": "2025-11-17"
+  },
+  "typst": {
+    "type": "github",
+    "owner": "enricozb",
+    "repo": "typst.kak",
+    "rev": "01e4a09ef124aec11157712b26a872d7a8bdb71a",
+    "sha256": "1g8avqc8wjkpdn6nmhg4aq2ljwn3mjdhsn5da36w0ybkwyb79g0x",
+    "version": "2025-11-17"
+  },
+  "reasymotion": {
+    "type": "github",
+    "owner": "astaugaard",
+    "repo": "reasymotion",
+    "rev": "801ed16d2e47862797ce3cfb00c901a123e460ce",
+    "sha256": "01jgda058cshd0i42mzd581w6c69wxln71srayvfsc1n243dg9kw",
+    "version": "2025-11-10"
+  },
+  "beryl": {
+    "type": "github",
+    "owner": "ftonneau",
+    "repo": "beryl.kak",
+    "rev": "bcfe516c22ceeedd51408bc98c37d60268db5e2c",
+    "sha256": "1ic8xp21myg2953kfvm3z65p688fyz96hjc59bkxlhcanhqx70l4",
+    "version": "2025-10-22"
+  },
+  "splash": {
+    "type": "github",
+    "owner": "ftonneau",
+    "repo": "splash.kak",
+    "rev": "93788bcda44bb2a9ed7d3db6e875dd8b95df386a",
+    "sha256": "0m7i8mc57xxvzfxzpx6kp4k9059dxzrwb0j3d6jdj046vfpx5hhm",
+    "version": "2025-10-21"
+  },
+  "gitlinker-cr": {
+    "type": "github",
+    "owner": "Yukaii",
+    "repo": "gitlinker.cr",
+    "rev": "c12f29d9375a0635342c6f386b868d95e895af31",
+    "sha256": "0j80nqdy5cnds0pf5cfvzl9wpfch307mzfx0sprw17mxjnfjwszs",
+    "version": "2025-09-30"
+  },
+  "src-outline": {
+    "type": "github",
+    "owner": "harryoooooooooo",
+    "repo": "src-outline.kak",
+    "rev": "0505e3696aadeeab2e6823f5c8009d5320416e56",
+    "sha256": "1z7zdanpdh56a0agfpl0hmg83272scfsz3yi46dfvv6xhcnvgj2j",
+    "version": "2025-09-18"
+  },
+  "open-github": {
+    "type": "github",
+    "owner": "evanrelf",
+    "repo": "open-github.kak",
+    "rev": "68d8b185f1d203ed667789389717f14015ddd354",
+    "sha256": "0fznrkav2lbaxg3shslf6q5rdzlq8z79m3yvqx9xr8mzf5fixvwc",
+    "version": "2025-08-28"
+  },
+  "kak-dap": {
+    "type": "github",
+    "owner": "jdugan6240",
+    "repo": "kak-dap",
+    "rev": "f2eaed45f6170e042b78e53a0049a3bb7944635b",
+    "sha256": "0bpmmj786x24bhbw9mwn3gfihfshzq4yxi1db246ig1rri5nqy7m",
+    "version": "2025-08-16"
+  },
+  "kaktree": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "kaktree",
+    "rev": "320d0a339638452e79be2a9caef11c05e8d47bec",
+    "sha256": "1m224sxzk0hs8a0nszi73bbdli4wnrq51n7c2lqi9dis6aljkczb",
+    "version": "2025-08-15"
+  },
+  "geppeto": {
+    "type": "github",
+    "owner": "eko234",
+    "repo": "geppeto",
+    "rev": "19d65e937a759f6788f4e75850a22d721d29c046",
+    "sha256": "0jhf2bpd6jllaqpwd5zx3hary9g22dk1h0d3ih6yyks747ryk8r0",
+    "version": "2025-08-11"
+  },
+  "base16-gruvbox": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "base16-gruvbox.kak",
+    "rev": "4cb1039e4d956562e2510300d6341ddb36700cea",
+    "sha256": "07wd9mmmbamd57swwhpd6nlbhwc8jj2sw4cppc8miqp0hk47r3hc",
+    "version": "2025-07-24"
+  },
+  "pmanage": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "pmanage.kak",
+    "rev": "452b1f76548ff6d28cf663c3a0af32126cb66a42",
+    "sha256": "1w9kvlkd4hvlx2fgf92z9afqppz91ikym50m0wj3mwqm0359jmkq",
+    "version": "2025-07-24"
+  },
+  "tagbar": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "tagbar.kak",
+    "rev": "99984063284df2da0db04ab4d342f7cc1b944742",
+    "sha256": "1wk030snr8azqkd43r6rypsxq3x31a7wzk6kpzcl3h80a547gvh0",
+    "version": "2025-07-24"
+  },
+  "powerline": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "powerline.kak",
+    "rev": "299be5ef1b977a3e37238271dd35c6a3d9cd2e3d",
+    "sha256": "0jg5i658icqvd1bab0sxyim3dw1cff97q176dnqp7s8fvxyrrfvd",
+    "version": "2025-07-24"
+  },
+  "langmap": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "langmap.kak",
+    "rev": "02ad358c05bc7db143ebbf1d1569b8bae72dc26f",
+    "sha256": "04p5yxwsmk9dsavgm1k72s39vhzs49xwhvj3n4ps1rx09cqws7fj",
+    "version": "2025-07-24"
+  },
+  "smarttab": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "smarttab.kak",
+    "rev": "2f820febfeb821892d24a5b2b7887bbad03b65b9",
+    "sha256": "1a497hdryw34jaj64fla6gcj98xapy80zisqnyyg2idncb8z1n0v",
+    "version": "2025-07-24"
+  },
+  "plug": {
+    "type": "github",
+    "owner": "andreyorst",
+    "repo": "plug.kak",
+    "rev": "aa31e3bd89aa8cb9e3ac3019edc231151fee346d",
+    "sha256": "09hkyv0sb14lps2n5jris2vb1waidjs0shvbhylxq2g8sv59np62",
+    "version": "2025-07-24"
+  },
+  "Obsidian-kak": {
+    "type": "github",
+    "owner": "coldmayo",
+    "repo": "Obsidian-kak",
+    "rev": "0c06aa3c5cde646f9be2fa532266b93c61c2b2ea",
+    "sha256": "0ax83m7n7abnrvl91w6afpwd80mw7ajyd3i7h2k62d1d9gpjm4ci",
+    "version": "2025-07-23"
+  },
+  "kakoune-boost": {
+    "type": "github",
+    "owner": "krobelus",
+    "repo": "kakoune-boost",
+    "rev": "77eaaacd2a38882dd34e84ce2646ac7d6c8db6e4",
+    "sha256": "1gg1nnh940rc5dgk2g8ji45knv2cpank6mx5fl7in6iyh1dzgma7",
+    "version": "2025-07-19"
+  },
+  "second-light": {
+    "type": "github",
+    "owner": "vbauerster",
+    "repo": "second-light",
+    "rev": "138b2904a551575b5e79c9af7f8f37f590dc9161",
+    "sha256": "1h06ib1vyaf8v24vfxcv96sg61yapz5kdjaxwgcdahm1i1vvgh53",
+    "version": "2025-07-09"
+  },
+  "locus": {
+    "type": "github",
+    "owner": "evanrelf",
+    "repo": "locus.kak",
+    "rev": "580a5975d2eea779c0c300d0cb42e697ea7edc91",
+    "sha256": "1nbyzb76m3rp01iflq4cshj51dicc2s7zw77kc3zprl9mn565zwx",
+    "version": "2025-06-16"
+  },
+  "tabs": {
+    "type": "github",
+    "owner": "enricozb",
+    "repo": "tabs.kak",
+    "rev": "88ad99561f48efaed36713f59c7f217f50be719b",
+    "sha256": "10r8my83x1h3l7abg7l3dnyl7yhpkx7g9gyqklvxcr6rpjpwfj7i",
+    "version": "2024-09-29"
+  },
+  "kak-bundle": {
+    "type": "github",
+    "owner": "jdugan6240",
+    "repo": "kak-bundle",
+    "rev": "6fb2fccfec714abdf4f0a6288ad1ac6e42913ded",
+    "sha256": "05qridpycd3n6cdvr3daq9bm0iz81bri1xly1v3vyvp5qhz6k46s",
+    "version": "2025-04-26"
+  },
+  "primer": {
+    "type": "github",
+    "owner": "evanrelf",
+    "repo": "primer.kak",
+    "rev": "4c64b21fb12d14a0c5d687717f5e767a80cdf7c0",
+    "sha256": "130dhj226svac871dx2sbvj2mny25jccflkrx9rc4vazq383yj4x",
+    "version": "2025-04-24"
+  },
+  "colorcol": {
+    "type": "github",
+    "owner": "SolitudeSF",
+    "repo": "colorcol",
+    "rev": "403549f18b9108bed2e9483afb84ca5baefc6a4c",
+    "sha256": "1qknqvcxcn9six3im1s338vxgidsw2hkg6rfzh8ngff4qb3ik43p",
+    "version": "2025-04-03"
+  },
+  "garbo": {
+    "type": "github",
+    "owner": "gustavo-hms",
+    "repo": "garbo",
+    "rev": "3ec0b58cddac3b74bc6128f5ca2372ec9d9b6a05",
+    "sha256": "1pm51pxcap53y1mgirmc9fyn38x967sp1xw1905mlvdyci3yambm",
+    "version": "2024-02-22"
+  },
+  "kakoune-gdb": {
+    "type": "github",
+    "owner": "occivink",
+    "repo": "kakoune-gdb",
+    "rev": "14e2b3033daac967f049cb9339e8276b670cd898",
+    "sha256": "0daasqvcs3r8y95l2wwd6lvl5sdk9bw1p9gyqqz5fcrd6bmi0rnd",
+    "version": "2025-01-31"
+  },
+  "god-mode": {
+    "type": "github",
+    "owner": "selectgender",
+    "repo": "god-mode.kak",
+    "rev": "b8ee9b4c32874b126b5dc8a3c7e7874b9d162a60",
+    "sha256": "140mbcz580vdwvzhhankgg13cc6a7zkksfmwc8ri1dmzrdvw7cqw",
+    "version": "2025-01-17"
+  },
+  "xmux": {
+    "type": "github",
+    "owner": "forbesmyester",
+    "repo": "xmux.kak",
+    "rev": "a7bd64c277c7a8dba28549da254eae8ec16e4c24",
+    "sha256": "18h54p913gn6dgyvmdpfghayiz3jl6wi9llf2kcx4kasqz9a3my7",
+    "version": "2023-07-26"
+  },
+  "auto-pairs": {
+    "type": "github",
+    "owner": "alexherbo2",
+    "repo": "auto-pairs.kak",
+    "rev": "e812ee6006b1c3d8c9afa45a0a90d28714636f81",
+    "sha256": "017x9g89q0w60y561xhigc0f14ryp4phh1hdna847ca5lvmbxksp",
+    "version": "2024-12-02"
+  },
+  "kakoune-multi-file": {
+    "type": "github",
+    "owner": "natasky",
+    "repo": "kakoune-multi-file",
+    "rev": "0cd144841e64124d3c313769a82be2c5f2588ab6",
+    "sha256": "133b63wss9lkdl83nwbaa4ms3visfxiwm967kb5by70afm5p1yv6",
+    "version": "2024-12-01"
+  },
+  "kakoune-snippets": {
+    "type": "github",
+    "owner": "occivink",
+    "repo": "kakoune-snippets",
+    "rev": "a0016bb0b0aac19db0740aaef869ff46233dbed5",
+    "sha256": "04hndw91a3wy2z224a68y2cwqdv0jy6iq5dvw9v92d0j8n1v9f8x",
+    "version": "2024-11-29"
+  },
+  "cosy-termcolors": {
+    "type": "github",
+    "owner": "Anfid",
+    "repo": "cosy-termcolors.kak",
+    "rev": "e39de1e43313af37f0e66a1718967d2c079f4a04",
+    "sha256": "0zkkvbvq47i04dfi4zapvya6hvzxc1jfyhwhqscv7zi0mj9v1iq4",
+    "version": "2024-11-26"
+  },
+  "cosy-gruvbox": {
+    "type": "github",
+    "owner": "Anfid",
+    "repo": "cosy-gruvbox.kak",
+    "rev": "8b73649d2ec5dc422e18e726bc594f63dde15459",
+    "sha256": "1ia81pgrx6qq93ccixl9hc1ggc28qbbss37rm63f899hjmq312s3",
+    "version": "2024-11-26"
+  },
+  "yaml-file-tree": {
+    "type": "github",
+    "owner": "losnappas",
+    "repo": "yaml-file-tree",
+    "rev": "dc3dcb8f8a538a13215d2b723a5220a4b79e37a7",
+    "sha256": "1by99ylds2lzayyvvyh6is5n8mf5c0i6734gqmkysj8jqmpnz8jw",
+    "version": "2024-11-02"
+  },
+  "openscad": {
+    "type": "github",
+    "owner": "mayjs",
+    "repo": "openscad.kak",
+    "rev": "7132080fa0e8f79a3f53ca7fc17ad60da8dfc147",
+    "sha256": "0glhm3hgj6mm2k6a0adj63ad9bvnb9my4y6amyawh07zbgr7m6wr",
+    "version": "2024-10-19"
+  },
+  "grep-write": {
+    "type": "github",
+    "owner": "jtrv",
+    "repo": "grep-write.kak",
+    "rev": "39640696ccfc78caa8348564091fbd08f576e4cc",
+    "sha256": "1s3cj01cx7rv8fwjcnixwzfsfrivqvrczk0izknyh22yyaa9yid3",
+    "version": "2024-10-02"
+  },
+  "raku": {
+    "type": "github",
+    "owner": "superwhiskers",
+    "repo": "raku.kak",
+    "rev": "1c7aba45c04b250c7ea33a843560f212c7e28ec1",
+    "sha256": "0iv3y0blvp7j9014363gx6vm2bzf8yrdyalk1l757fzg05a0pr64",
+    "version": "2024-09-01"
+  },
+  "haredoc": {
+    "type": "github",
+    "owner": "rojebd",
+    "repo": "haredoc.kak",
+    "rev": "04a5a692cfcf9d3240edec59d411ec02f74c1c7c",
+    "sha256": "0jaxd8b15wcl990y2z6idib5jr3nnsmjdp00l7p9wd7j30wsyz1b",
+    "version": "2024-06-22"
+  },
+  "ssh-config": {
+    "type": "github",
+    "owner": "Yukaii",
+    "repo": "ssh-config.kak",
+    "rev": "022553396fa521a8cbed58e025e5d2165342556e",
+    "sha256": "0k8yrx4aa55mfkvrwmisvdlf17dvzhijjhxyy0s5gz3mpvipx329",
+    "version": "2024-05-28"
+  },
+  "better-haskell": {
+    "type": "github",
+    "owner": "evanrelf",
+    "repo": "better-haskell.kak",
+    "rev": "069690575aa92e34338d8102594f797c1e1fa41a",
+    "sha256": "1w4w8ga255dhj295lsad03dwifc76771mwiab6p3dwsc6grzyysz",
+    "version": "2024-05-13"
   }
 }

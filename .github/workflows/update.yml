@@ -1,32 +1,59 @@
-name: Update inputs
+name: Update kakoune-overlay
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 */8 * * *"
   workflow_dispatch:
 
 jobs:
-  update:
+  flake-inputs:
+    name: Update flake inputs
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'lane-core'
     steps:
       - uses: actions/checkout@v4
 
       - uses: DeterminateSystems/nix-installer-action@main
 
-      - name: Update flake inputs
-        run: |
-          nix flake lock --update-input kakoune-src
-          nix flake lock --update-input kakoune-lsp-src
-          nix flake lock --update-input kak-tree-sitter-src
-
-      - name: Commit and push
+      - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add flake.lock
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update kakoune inputs $(date -u +%Y-%m-%d)"
-            git push
-          fi
+
+      - name: Update flake inputs
+        run: |
+          nix flake update
+          git commit -m "Updated flake inputs" flake.lock || true
+
+      - name: Push updated lock
+        run: |
+          git pull --rebase --autostash
+          git push
+
+  refresh-overlay:
+    name: Refresh sources
+    needs: flake-inputs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: ["core", "plugins"]
+    if: github.repository_owner == 'lane-core'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update sources
+        run: |
+          export GIT_PAGER=
+          ./update ${{ matrix.repo }}
+
+      - name: Push updated sources
+        run: |
+          git pull --rebase --autostash
+          git push

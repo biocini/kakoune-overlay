@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo="$1"
+
+"repos/$repo/update"
+
+if git diff --exit-code "repos/$repo" > /dev/null; then
+    exit 0
+fi
+
+git commit -m "Updated $repo" -- "repos/$repo"

@@ -5,15 +5,21 @@ SCRIPTPATH="$(cd "$(dirname "$0")"; pwd -P)"
 cd "$SCRIPTPATH"
 
 update_github() {
-    local owner="$1" repo="$2" file="$3"
+    local owner="$1" repo="$2" file="$3" branch="${4:-master}"
     echo "Updating $owner/$repo"
 
-    # Get latest commit SHA
-    local commit_sha
-    commit_sha=$(curl -s "https://api.github.com/repos/$owner/$repo/commits/HEAD" | jq -r '.sha')
+    # Use GitHub Atom feed — no API auth/rate limits
+    local commit_data
+    commit_data=$(curl -sL "https://github.com/$owner/$repo/commits/$branch.atom" | \
+        grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | \
+        sed 's/.*Commit\///; s/<\/id>//; s/ //g')
+
+    local commit_sha="$commit_data"
 
     local version_date
-    version_date=$(curl -s "https://api.github.com/repos/$owner/$repo/commits/$commit_sha" | jq -r '.commit.committer.date' | cut -dT -f1)
+    version_date=$(curl -sL "https://github.com/$owner/$repo/commits/$branch.atom" | \
+        grep -m1 '<updated>' | \
+        sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g')
 
     local digest
     digest=$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$commit_sha.tar.gz")
