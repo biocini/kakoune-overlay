@@ -96,8 +96,7 @@ branch. These attributes are named `kakoune`, `kakoune-lsp`, and
 #### Kakoune plugins from GitHub
 
 This overlay extends `kakounePlugins` with additional plugins sourced from
-GitHub repositories tagged with `topic:kakoune` and `topic:plugin`, filtered
-to those updated within the last two years. Each plugin is built from the
+GitHub repositories tagged with `topic:kakoune` and `topic:plugin`. Each plugin is built from the
 latest git revision using `buildKakounePluginFrom2Nix`.
 
 The plugin set is generated from `repos/plugins/manifest.json` and updated
@@ -137,10 +136,17 @@ pkgs.kakoune.override {
 A GitHub Actions workflow runs every 8 hours to:
 
 1. Update `flake.lock`
-2. Refresh source metadata in `repos/core/` and `repos/plugins/`
-3. Commit and push automatically when changes are detected
+2. Refresh source metadata in `repos/core/`
+3. Refresh existing plugin metadata in `repos/plugins/manifest.json`
+4. Commit and push automatically when changes are detected
 
-The workflow mirrors [emacs-overlay's CI pattern](https://github.com/nix-community/emacs-overlay/blob/master/.github/workflows/ci.yml).
+**New plugins are never auto-committed.**  When the discovery script finds
+repos newly tagged with `topic:kakoune+topic:plugin`, a separate
+`workflow_dispatch` job opens a PR for human review.  Each candidate plugin
+is checked for hardcoded paths requiring Nix store rewrites before landing
+on `master`.
+
+The update workflow mirrors [emacs-overlay's CI pattern](https://github.com/nix-community/emacs-overlay/blob/master/.github/workflows/ci.yml).
 
 ## Local development
 
@@ -160,7 +166,20 @@ nix develop                      # enter dev shell with all packages
 
 ### Adding a new plugin
 
-Edit `repos/plugins/manifest.json`:
+The overlay discovers new plugins automatically from GitHub repos tagged with
+`topic:kakoune+topic:plugin`.  Run the discovery script locally:
+
+```bash
+./repos/plugins/discover   # writes candidates to /tmp/new-plugins.json
+```
+
+Or trigger the CI workflow which opens a PR for review:
+
+```bash
+gh workflow run new-plugin-pr.yml
+```
+
+To add a plugin manually, edit `repos/plugins/manifest.json`:
 
 ```json
 {
@@ -177,6 +196,26 @@ Edit `repos/plugins/manifest.json`:
 
 Run `./update plugins` to refresh all plugin metadata, or use `nix-prefetch-url`
 or `nix-prefetch-git` to get the hash manually.
+
+## AI disclosure
+
+This repository was created and is maintained with assistance from AI
+systems. The initial architecture, Nix overlay design, and CI workflows
+were developed in collaboration with the [pi](https://github.com/biocini/pi)
+coding agent. Ongoing maintenance — including plugin discovery, dependency
+auditing, and documentation updates — continues to involve AI-assisted
+workflows. Specifically:
+
+- **Plugin discovery** (`repos/plugins/discover`) is automated but new
+  plugins are reviewed via a Copilot-assisted PR workflow before landing
+  on `master`
+- **Build-time path rewrites** (`repos/plugins/overrides.nix`) are
+  audited for hardcoded paths that won't resolve from the Nix store
+- **Commits** in this repo follow Conventional Commits with a
+  `Generated-with` footer indicating whether the work was done via pi
+  or GitHub Actions (Copilot-assisted)
+
+All AI-generated changes are subject to human review before merge.
 
 ## Structure
 
@@ -196,8 +235,11 @@ or `nix-prefetch-git` to get the hash manually.
 │   │   └── update                # Bash updater for core packages
 │   └── plugins/
 │       ├── manifest.json         # Plugin metadata
-│       └── update                # Bash updater for plugins
+│       ├── overrides.nix         # Build-time path rewrites
+│       ├── discover              # Discover new plugins from GitHub
+│       └── update                # Bash updater for existing plugins
 ├── update                 # Top-level delegator: ./update <repo>
 └── .github/workflows/
-    └── update.yml         # CI: matrix update of core + plugins
+    ├── update.yml           # CI: matrix update of core + plugins
+    └── new-plugin-pr.yml    # CI: propose new plugins via PR
 ```

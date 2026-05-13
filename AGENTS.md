@@ -21,9 +21,19 @@ All `repos/**/*.json` files use **base32 `sha256`** (the default output of `nix-
 
 ## Update scripts
 
-The `./update` script is the canonical entry point. It delegates to `repos/<repo>/update` and auto-commits if changes are detected. Always use it rather than running per-repo scripts directly.
+The `./update` script is the canonical entry point for refreshing
+**existing** plugins. It delegates to `repos/<repo>/update` and
+auto-commits if changes are detected.
 
-Per-repo updaters fetch latest commits via **GitHub Atom feeds** (`.../commits/<branch>.atom`) instead of the REST API. This avoids rate limits entirely and does not require `GITHUB_TOKEN`.
+**New plugin discovery is separate.** Use `repos/plugins/discover` to find
+repos newly tagged with `topic:kakoune+topic:plugin`. It writes candidates
+to `/tmp/new-plugins.json` and prints normalized names to stdout. Never
+commit discovered plugins directly — they must go through the PR review
+workflow (`new-plugin-pr.yml`).
+
+Per-repo updaters fetch latest commits via **GitHub Atom feeds**
+(`.../commits/<branch>.atom`) instead of the REST API. This avoids rate
+limits entirely and does not require `GITHUB_TOKEN`.
 
 ## Plugin name normalization
 
@@ -38,7 +48,10 @@ This convention must be consistent between the manifest and any bootstrap script
 
 ## Verification
 
-Before declaring changes complete, run `nix flake check --all-systems`.
+Before declaring local changes complete, run `nix flake check --all-systems`.
+
+For PRs opened by the new-plugin workflow, CI runs `nix flake check`
+automatically — do not run it manually in the workflow.
 
 ## Nix file editing
 
