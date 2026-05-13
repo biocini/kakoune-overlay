@@ -61,11 +61,11 @@ Use the plugin's **normalized name** (as it appears in the manifest keys):
 
 **Entry types:**
 
-| Form                                     | Effect                                                                         |
-| ---------------------------------------- | ------------------------------------------------------------------------------ |
-| `{ deps = []; }`                         | Vetted: no external deps                                                       |
+| Form                                     | Effect                                                                                                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{ deps = []; }`                         | Vetted: no external deps                                                                                                                                |
 | `{ deps = [ pkgs.X ]; }`                 | Symlinks useful binaries from `X/bin/` into `$out/share/kak/bin/`, adds to `propagatedBuildInputs` (noise like `idle`, `pydoc`, `*-config` is filtered) |
-| `{ deps = [...]; postInstall = "..."; }` | Same as above, plus custom `postInstall` script appended after symlink step    |
+| `{ deps = [...]; postInstall = "..."; }` | Same as above, plus custom `postInstall` script appended after symlink step                                                                             |
 
 ### 4. Verify the build
 

@@ -56,29 +56,29 @@ let
       newSrc = fetchFromRepo name meta;
       override = overrides.${name} or { deps = [ ]; };
       deps = override.deps or [ ];
+      bins = override.bins or [ ];
       customPostInstall = override.postInstall or "";
 
       nixpkgsName = nameMap.${name} or name;
       inNixpkgs = builtins.hasAttr nixpkgsName super.kakounePlugins;
 
-      # Symlink dependency binaries into the plugin's share/kak/bin/.
-      # Skips common noise binaries (config scripts, docs, IDE launchers)
-      # so that only useful executables end up on kakoune's PATH.
-      symlinkDeps = lib.concatMapStrings (dep: ''
-        for bin in ${lib.getBin dep}/bin/*; do
-          [ -e "$bin" ] || continue
-          base=$(basename "$bin")
-          # Skip common noise binaries
-          case "$base" in
-            idle*|pydoc*|*-config|*.pyc|*.pyo|2to3|easy_install*|pip*) continue ;;
-          esac
-          ln -sf "$bin" "$out/share/kak/bin/$base"
-        done
-      '') deps;
-
-      depPostInstall = lib.optionalString (deps != [ ] || customPostInstall != "") ''
+      # Symlink only the explicitly-listed binaries from deps into
+      # $out/share/kak/bin/.  The list is determined by reading the
+      # plugin's kak files and noting which bare commands appear in
+      # %sh{...} blocks.
+      symlinkBins = lib.optionalString (bins != [ ]) ''
         mkdir -p $out/share/kak/bin
-        ${symlinkDeps}
+        for dep in ${lib.concatMapStringsSep " " (d: lib.getBin d) deps}; do
+          for bin in ${lib.concatStringsSep " " bins}; do
+            if [ -e "$dep/bin/$bin" ] && [ ! -e "$out/share/kak/bin/$bin" ]; then
+              ln -sf "$dep/bin/$bin" "$out/share/kak/bin/$bin"
+            fi
+          done
+        done
+      '';
+
+      depPostInstall = lib.optionalString (bins != [ ] || customPostInstall != "") ''
+        ${symlinkBins}
         ${customPostInstall}
       '';
 
