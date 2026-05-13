@@ -6,7 +6,7 @@ and [emacs-overlay](https://github.com/nix-community/emacs-overlay).
 
 ## Quickstart
 
-### With flakes
+Add the overlay to your flake:
 
 ```nix
 {
@@ -27,7 +27,7 @@ and [emacs-overlay](https://github.com/nix-community/emacs-overlay).
 }
 ```
 
-### Without flakes
+Or without flakes:
 
 ```nix
 { pkgs, ... }: {
@@ -39,20 +39,17 @@ and [emacs-overlay](https://github.com/nix-community/emacs-overlay).
 }
 ```
 
-### With home-manager
+With home-manager:
 
 ```nix
 { pkgs, ... }: {
   programs.kakoune = {
     enable = true;
     package = pkgs.kakoune;
-    config = {
-      colorScheme = "default";
-    };
     plugins = with pkgs.kakounePlugins; [
       kakoune-lsp
       kak-tree-sitter
-      # any other plugins from the overlay
+      # additional plugins from the overlay
     ];
   };
 }
@@ -75,58 +72,64 @@ nix.settings = {
 Or use the flake directly — the `nixConfig` in `flake.nix` already declares
 these settings, so `nix build` will prompt you to accept them.
 
-## Packages
+## Contents of the overlay
 
-### Core
+This overlay consists of two overlays: `pkgs` and `plugins`. You can use both
+of them as a whole overlay or only one of them.
 
-| Package           | Source                                                                       | Description             |
+### `pkgs` overlay
+
+#### Kakoune from Git
+
+This overlay provides the Kakoune editor built from the latest `master`
+branch. These attributes are named `kakoune`, `kakoune-lsp`, and
+`kak-tree-sitter`. They are updated automatically from upstream git.
+
+| Attribute         | Source                                                                       | Description             |
 | ----------------- | ---------------------------------------------------------------------------- | ----------------------- |
 | `kakoune`         | [mawww/kakoune](https://github.com/mawww/kakoune)                            | The editor              |
 | `kakoune-lsp`     | [kakoune-lsp/kakoune-lsp](https://github.com/kakoune-lsp/kakoune-lsp)        | LSP client              |
 | `kak-tree-sitter` | [~hadronized/kak-tree-sitter](https://git.sr.ht/~hadronized/kak-tree-sitter) | Tree-sitter integration |
 
-### Plugins
+### `plugins` overlay
 
-This overlay extends `kakounePlugins` with **72 additional plugins** sourced
-from GitHub repositories tagged with `topic:kakoune` and `topic:plugin`,
-filtered to those updated within the last two years. Each plugin is built
-from the latest git revision using `buildKakounePluginFrom2Nix`.
+#### Kakoune plugins from GitHub
 
-A sampling of available plugins:
+This overlay extends `kakounePlugins` with additional plugins sourced from
+GitHub repositories tagged with `topic:kakoune` and `topic:plugin`, filtered
+to those updated within the last two years. Each plugin is built from the
+latest git revision using `buildKakounePluginFrom2Nix`.
 
-- `kakounePlugins.popup` — popup windows
-- `kakounePlugins.kaktree` — file tree sidebar
-- `kakounePlugins.peneira` — fuzzy finder framework
-- `kakounePlugins.kakoune-smooth-scroll` — smooth scrolling
-- `kakounePlugins.kakoune-focus` — focus mode
-- `kakounePlugins.kakoune-git-mode` — git workflow helpers
-- `kakounePlugins.powerline-kak` — powerline status bar
-- `kakounePlugins.smarttab` — smart tab behavior
+The plugin set is generated from `repos/plugins/manifest.json` and updated
+automatically by CI.
 
-The full list is generated from `repos/plugins/manifest.json`.
+To discover available plugins:
 
-## Structure
-
+```bash
+nix search github:biocini/kakoune-overlay kakounePlugins
+# or, with the overlay enabled:
+nix search .#legacyPackages.x86_64-linux.kakounePlugins
 ```
-.
-├── flake.nix              # Flake outputs (overlay, packages, devShells)
-├── overlay.nix            # Entry point — imports overlays/
-├── overlays/
-│   ├── default.nix        # Composes pkgs.nix + plugins.nix
-│   ├── pkgs.nix           # Core package overrides
-│   └── plugins.nix        # kakounePlugins overlay from manifest.json
-├── repos/
-│   ├── core/
-│   │   ├── kakoune.json          # Metadata: rev, sha256, version
-│   │   ├── kakoune-lsp.json
-│   │   ├── kak-tree-sitter.json
-│   │   └── update                # Bash updater for core packages
-│   └── plugins/
-│       ├── manifest.json         # Plugin metadata (72 plugins)
-│       └── update                # Bash updater for plugins
-├── update                 # Top-level delegator: ./update <repo>
-└── .github/workflows/
-    └── update.yml         # CI: matrix update of core + plugins
+
+#### Custom plugins
+
+The overlay inherits `buildKakounePluginFrom2Nix` from nixpkgs, which you can
+use to define your own plugins:
+
+```nix
+let myPlugin = pkgs.kakouneUtils.buildKakounePluginFrom2Nix {
+  pname = "my-plugin";
+  version = "2024-01-15";
+  src = pkgs.fetchFromGitHub {
+    owner = "me";
+    repo = "my-plugin.kak";
+    rev = "abc123...";
+    sha256 = "sha256-...";
+  };
+}; in
+pkgs.kakoune.override {
+  plugins = with pkgs.kakounePlugins; [ myPlugin kakoune-lsp ];
+}
 ```
 
 ## Auto-updates
@@ -174,3 +177,27 @@ Edit `repos/plugins/manifest.json`:
 
 Run `./update plugins` to refresh all plugin metadata, or use `nix-prefetch-url`
 or `nix-prefetch-git` to get the hash manually.
+
+## Structure
+
+```
+.
+├── flake.nix              # Flake outputs (overlay, packages, devShells)
+├── overlay.nix            # Entry point — imports overlays/
+├── overlays/
+│   ├── default.nix        # Composes pkgs.nix + plugins.nix
+│   ├── pkgs.nix           # Core package overrides
+│   └── plugins.nix        # kakounePlugins overlay from manifest.json
+├── repos/
+│   ├── core/
+│   │   ├── kakoune.json          # Metadata: rev, sha256, version
+│   │   ├── kakoune-lsp.json
+│   │   ├── kak-tree-sitter.json
+│   │   └── update                # Bash updater for core packages
+│   └── plugins/
+│       ├── manifest.json         # Plugin metadata
+│       └── update                # Bash updater for plugins
+├── update                 # Top-level delegator: ./update <repo>
+└── .github/workflows/
+    └── update.yml         # CI: matrix update of core + plugins
+```
