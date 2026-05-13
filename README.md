@@ -140,11 +140,12 @@ A GitHub Actions workflow runs every 8 hours to:
 3. Refresh existing plugin metadata in `repos/plugins/manifest.json`
 4. Commit and push automatically when changes are detected
 
-**New plugins are never auto-committed.**  When the discovery script finds
+**New plugins are never auto-committed.** When the discovery script finds
 repos newly tagged with `topic:kakoune+topic:plugin`, a separate
-`workflow_dispatch` job opens a PR for human review.  Each candidate plugin
-is checked for hardcoded paths requiring Nix store rewrites before landing
-on `master`.
+`workflow_dispatch` job opens a PR for human review. Each candidate plugin
+is vetted for security issues (outbound network calls, sensitive data
+access, obfuscated shell) and checked for hardcoded paths requiring Nix
+store rewrites before landing on `master`.
 
 The update workflow mirrors [emacs-overlay's CI pattern](https://github.com/nix-community/emacs-overlay/blob/master/.github/workflows/ci.yml).
 
@@ -167,7 +168,7 @@ nix develop                      # enter dev shell with all packages
 ### Adding a new plugin
 
 The overlay discovers new plugins automatically from GitHub repos tagged with
-`topic:kakoune+topic:plugin`.  Run the discovery script locally:
+`topic:kakoune+topic:plugin`. Run the discovery script locally:
 
 ```bash
 ./repos/plugins/discover   # writes candidates to /tmp/new-plugins.json
@@ -202,13 +203,18 @@ or `nix-prefetch-git` to get the hash manually.
 This repository was created and is maintained with assistance from AI
 systems. The initial architecture, Nix overlay design, and CI workflows
 were developed in collaboration with the [pi](https://github.com/biocini/pi)
-coding agent. Ongoing maintenance — including plugin discovery, dependency
-auditing, and documentation updates — continues to involve AI-assisted
-workflows. Specifically:
+coding agent. Ongoing maintenance — including plugin discovery, security
+vetting, dependency auditing, and documentation updates — continues to
+involve AI-assisted workflows. Specifically:
 
 - **Plugin discovery** (`repos/plugins/discover`) is automated but new
   plugins are reviewed via a Copilot-assisted PR workflow before landing
   on `master`
+- **Security vetting** (`.pi/skills/kakoune-overlay-security/SKILL.md`)
+  scans each candidate plugin's `.kak` source for outbound network calls,
+  sensitive data access, obfuscated shell, and suspicious repo metadata.
+  Plugins flagged with a `FAIL` verdict block manifest updates and open a
+  `[SECURITY FAIL]` PR for human review.
 - **Build-time path rewrites** (`repos/plugins/overrides.nix`) are
   audited for hardcoded paths that won't resolve from the Nix store
 - **Commits** in this repo follow Conventional Commits with a
@@ -216,6 +222,13 @@ workflows. Specifically:
   or GitHub Actions (Copilot-assisted)
 
 All AI-generated changes are subject to human review before merge.
+
+**User responsibility:** The automated security vetting is a tool to
+assist maintainer review, not a guarantee of safety. Kakoune plugins
+execute shell code with the privileges of your editor session. You are
+ultimately responsible for vetting any plugin before installation,
+regardless of whether it comes from this overlay, nixpkgs, or upstream
+directly.
 
 ## Structure
 

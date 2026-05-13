@@ -60,9 +60,41 @@ jobs:
           gh auth login --with-token <<< "${{ secrets.COPILOT_PAT }}"
           gh extension install github/gh-copilot
 
-      - name: Run Copilot review
+      - name: Security vetting (Phase 1)
         if: steps.discover.outputs.count != '0'
         run: |
+          cat > /tmp/task.md << 'TASK_EOF'
+          Read `.pi/skills/kakoune-overlay-security/SKILL.md` in full.
+
+          For each plugin in /tmp/new-plugins.json:
+
+          1. Fetch all `.kak` files from the plugin's GitHub source tree
+             via `curl` using the owner/repo/rev from the manifest entry.
+          2. Apply the security review criteria from the skill.
+          3. Write your verdict (`PASS`, `WARN`, or `FAIL`) and findings
+             to `/tmp/security-report.json` as a JSON object keyed by
+             plugin name, with fields:
+             - `verdict`: string, one of PASS, WARN, FAIL
+             - `findings`: string, empty if PASS
+             - `flagged_lines`: array of {file, line, pattern} objects,
+               empty if PASS
+          4. If any plugin receives a `FAIL` verdict, write the string
+             `FAIL` to `/tmp/security-verdict`. Otherwise write `PASS`.
+             Continue reviewing remaining plugins even after a FAIL.
+          TASK_EOF
+          gh copilot suggest --target shell --non-interactive < /tmp/task.md \
+            || true
+          if [ ! -f /tmp/security-verdict ]; then
+            echo "PASS" > /tmp/security-verdict
+          fi
+
+      - name: Manifest and overrides update (Phase 2)
+        if: steps.discover.outputs.count != '0'
+        run: |
+          if [ "$(cat /tmp/security-verdict)" = "FAIL" ]; then
+            echo "Security FAIL detected. Skipping manifest/overrides update."
+            exit 0
+          fi
           cat > /tmp/task.md << 'TASK_EOF'
           You are given /tmp/new-plugins.json -- a JSON object of newly
           discovered plugins in the same schema as
@@ -97,11 +129,22 @@ jobs:
           TIMESTAMP=$(date -u +%Y%m%d-%H%M%S)
           BRANCH="new-plugins-${TIMESTAMP}"
           git checkout -b "$BRANCH"
-          git add repos/plugins/manifest.json \
-            repos/plugins/overrides.nix
-          if [ -f /tmp/msg.txt ]; then
+
+          HAS_FAIL=false
+          if [ -f /tmp/security-report.json ]; then
+            if jq -e 'to_entries[] | select(.value.verdict == "FAIL")' /tmp/security-report.json >/dev/null 2>&1; then
+              HAS_FAIL=true
+            fi
+          fi
+
+          if [ "$HAS_FAIL" = "false" ] && [ -f /tmp/msg.txt ]; then
+            git add repos/plugins/manifest.json \
+              repos/plugins/overrides.nix
             git commit -F /tmp/msg.txt
-          else
+            git push -u origin "$BRANCH"
+          elif [ "$HAS_FAIL" = "false" ]; then
+            git add repos/plugins/manifest.json \
+              repos/plugins/overrides.nix
             cat > /tmp/fallback-msg.txt << 'MSG'
             feat(plugins): add newly discovered plugins
 
@@ -110,16 +153,40 @@ jobs:
             Generated-with: github-actions (copilot-assisted)
             MSG
             git commit -F /tmp/fallback-msg.txt
+            git push -u origin "$BRANCH"
+          else
+            echo "Security FAIL detected. Creating PR for review without manifest changes."
+            git add repos/plugins/manifest.json \
+              repos/plugins/overrides.nix || true
+            git push -u origin "$BRANCH" || true
           fi
-          git push -u origin "$BRANCH"
 
           NEW_PLUGINS=$(./repos/plugins/discover)
           BODY="# New Kakoune Plugins\n\n"
+
+          if [ "$HAS_FAIL" = "true" ]; then
+            BODY="${BODY}> ⚠️ **SECURITY FAIL detected.** One or more plugins "
+            BODY="${BODY}failed automated security vetting. The manifest has **not** "
+            BODY="${BODY}been updated. This PR exists solely to surface the findings "
+            BODY="${BODY}for human review.\n\n"
+          fi
+
           while IFS= read -r name; do
             meta=$(jq --arg n "$name" '.[$n]' /tmp/new-plugins.json)
             owner=$(echo "$meta" | jq -r '.owner')
             repo=$(echo "$meta" | jq -r '.repo')
-            BODY="${BODY}### ${name} (${owner}/${repo})\n"
+            BODY="${BODY}### ${name} (${owner}/${repo})\n\n"
+
+            if [ -f /tmp/security-report.json ]; then
+              verdict=$(jq -r --arg n "$name" '.[$n].verdict // "PASS"' /tmp/security-report.json)
+              findings=$(jq -r --arg n "$name" '.[$n].findings // ""' /tmp/security-report.json)
+              BODY="${BODY}**Security verdict: ${verdict}**\n"
+              if [ -n "$findings" ] && [ "$findings" != "null" ]; then
+                BODY="${BODY}${findings}\n"
+              fi
+              BODY="${BODY}\n"
+            fi
+
             BODY="${BODY}- [ ] manifest entry looks correct (rev, sha256, branch)\n"
             BODY="${BODY}- [ ] .kak source reviewed for hardcoded paths "
             BODY="${BODY}requiring store rewrites\n"
@@ -128,8 +195,14 @@ jobs:
             BODY="${BODY}- [ ] nix flake check passes (CI)\n\n"
           done <<< "$NEW_PLUGINS"
 
+          if [ "$HAS_FAIL" = "true" ]; then
+            PR_TITLE="[SECURITY FAIL] feat(plugins): new plugins — security review required"
+          else
+            PR_TITLE="feat(plugins): add newly discovered plugins"
+          fi
+
           gh pr create \
-            --title "feat(plugins): add newly discovered plugins" \
+            --title "$PR_TITLE" \
             --body "$BODY" \
             --base master \
             --head "$BRANCH"
