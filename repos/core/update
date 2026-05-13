@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+SCRIPTPATH="$(cd "$(dirname "$0")"; pwd -P)"
+cd "$SCRIPTPATH"
+
+update_github() {
+    local owner="$1" repo="$2" file="$3"
+    echo "Updating $owner/$repo"
+
+    # Get latest commit SHA
+    local commit_sha
+    commit_sha=$(curl -s "https://api.github.com/repos/$owner/$repo/commits/HEAD" | jq -r '.sha')
+
+    local version_date
+    version_date=$(curl -s "https://api.github.com/repos/$owner/$repo/commits/$commit_sha" | jq -r '.commit.committer.date' | cut -dT -f1)
+
+    local digest
+    digest=$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$commit_sha.tar.gz")
+
+    jq -n \
+        --arg type "github" \
+        --arg owner "$owner" \
+        --arg repo "$repo" \
+        --arg rev "$commit_sha" \
+        --arg sha256 "$digest" \
+        --arg version "$version_date" \
+        '{type: $type, owner: $owner, repo: $repo, rev: $rev, sha256: $sha256, version: $version}' \
+        > "$file"
+}
+
+update_git() {
+    local url="$1" file="$2"
+    echo "Updating $url"
+
+    local info
+    info=$(nix-prefetch-git --no-deepClone "$url")
+
+    local rev sha256 version_date
+    rev=$(echo "$info" | jq -r '.rev')
+    sha256=$(echo "$info" | jq -r '.sha256')
+    version_date=$(echo "$info" | jq -r '.date' | cut -dT -f1)
+
+    jq -n \
+        --arg type "git" \
+        --arg url "$url" \
+        --arg rev "$rev" \
+        --arg sha256 "$sha256" \
+        --arg version "$version_date" \
+        '{type: $type, url: $url, rev: $rev, sha256: $sha256, version: $version}' \
+        > "$file"
+}
+
+update_github "mawww" "kakoune" "kakoune.json"
+update_github "kakoune-lsp" "kakoune-lsp" "kakoune-lsp.json"
+update_git "https://git.sr.ht/~hadronized/kak-tree-sitter" "kak-tree-sitter.json"
