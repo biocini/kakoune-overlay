@@ -1,6 +1,11 @@
 {
   description = "Kakoune overlay — nightly git builds of kakoune and its ecosystem";
 
+  nixConfig = {
+    extra-substituters = [ "https://kakoune-overlay.cachix.org" ];
+    extra-trusted-public-keys = [ "kakoune-overlay.cachix.org-1:wvzi0bQFg1NEkPF1eaU3atZD/4soGx1IG6sensUdvxY=" ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
