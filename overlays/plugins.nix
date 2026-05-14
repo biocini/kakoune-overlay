@@ -13,24 +13,17 @@ let
 
   # Nixpkgs plugins whose stale hooks need clearing when src is updated.
   nixpkgsFixups = {
-    kakoune-rainbow = { preFixup = ""; };
+    kakoune-rainbow = {
+      preFixup = "";
+    };
   };
 
   # Map our normalized plugin names to nixpkgs' names where they differ.
+  # Normalization is just `tr '.' '-'`, so most .kak repos already match
+  # nixpkgs (e.g. fzf.kak -> fzf-kak).  Only discrepancies where the
+  # upstream repo name differs from nixpkgs need entries here.
   nameMap = {
-    active-window = "active-window-kak";
-    auto-pairs = "auto-pairs-kak";
-    byline = "byline-kak";
-    connect = "connect-kak";
-    fzf = "fzf-kak";
     kakoune-buffers = "kak-buffers";
-    kakoune-extra-filetypes = "kakoune-extra-filetypes";
-    openscad = "openscad-kak";
-    pandoc = "pandoc-kak";
-    powerline = "powerline-kak";
-    prelude = "prelude-kak";
-    smarttab = "smarttab-kak";
-    tabs = "tabs-kak";
   };
 
   fetchFromRepo =
@@ -80,13 +73,17 @@ let
     if inNixpkgs then
       # Plugin exists in nixpkgs: override src and version only.
       # Nixpkgs' own overrides (preFixup, buildInputs, etc.) are preserved.
-      super.kakounePlugins.${nixpkgsName}.overrideAttrs (old: {
-        version = meta.version;
-        src = newSrc;
-        meta = (old.meta or { }) // {
-          inherit homepage;
-        };
-      } // (nixpkgsFixups.${nixpkgsName} or { }))
+      super.kakounePlugins.${nixpkgsName}.overrideAttrs (
+        old:
+        {
+          version = meta.version;
+          src = newSrc;
+          meta = (old.meta or { }) // {
+            inherit homepage;
+          };
+        }
+        // (nixpkgsFixups.${nixpkgsName} or { })
+      )
     else
       # New plugin: build from scratch.  Only postInstall path rewrites
       # are supported here — runtime binary deps are the user's
@@ -95,7 +92,12 @@ let
         pname = name;
         version = meta.version;
         src = newSrc;
-        meta.homepage = homepage;
+        meta = {
+          inherit homepage;
+          description = meta.description or "";
+        } // lib.optionalAttrs (meta ? license && meta.license != "") {
+          license = meta.license;
+        };
         postInstall = customPostInstall;
       };
 

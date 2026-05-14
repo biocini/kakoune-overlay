@@ -30,10 +30,10 @@
 {
   # 2025-12-12 — Lean 4 language support
   # Rewrites hardcoded $kak_config-relative path to absolute store path.
-  lean4 = {
+  lean4-kak = {
     postInstall = ''
-      substituteInPlace $out/share/kak/autoload/plugins/lean4/lean4.kak \
-        --replace '$kak_config/lean4-replace-abbreviations.py' "$out/share/kak/autoload/plugins/lean4/lean4-replace-abbreviations.py"
+      substituteInPlace $out/share/kak/autoload/plugins/lean4-kak/lean4.kak \
+        --replace '$kak_config/lean4-replace-abbreviations.py' "$out/share/kak/autoload/plugins/lean4-kak/lean4-replace-abbreviations.py"
     '';
   };
 }

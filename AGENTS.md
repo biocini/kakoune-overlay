@@ -37,14 +37,14 @@ limits entirely and does not require `GITHUB_TOKEN`.
 
 ## Plugin name normalization
 
-When adding plugins to `repos/plugins/manifest.json`, normalize the key as:
+Plugin names in `repos/plugins/manifest.json` are derived directly from
+the upstream repository name with one transformation: replace `.` with `-`.
+No suffixes are stripped.
 
-1. Strip `.kak` suffix from repo name
-2. Replace `.` with `-`
+Example: `auto-pairs.kak` → `auto-pairs-kak`; `powerline.kak` → `powerline-kak`.
 
-Example: `auto-pairs.kak` → `auto-pairs`; `powerline.kak` → `powerline`.
-
-This convention must be consistent between the manifest and any bootstrap scripts.
+This aligns with nixpkgs' own naming convention for kakoune plugins and
+eliminates the need for most aliases in `overlays/plugins.nix`.
 
 ## Verification
 
