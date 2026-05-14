@@ -39,7 +39,7 @@ in
     src = fetchFromRepo kakouneStableMeta;
   });
 
-  kakoune = super.wrapKakoune self.kakoune-unwrapped { plugins = []; };
+  kakoune = super.wrapKakoune self.kakoune-unwrapped { plugins = [ ]; };
 
   # Git: built from latest master commit
   kakoune-unwrapped-git = super.kakoune-unwrapped.overrideAttrs (old: {
@@ -50,7 +50,7 @@ in
     '';
   });
 
-  kakoune-git = super.wrapKakoune self.kakoune-unwrapped-git { plugins = []; };
+  kakoune-git = super.wrapKakoune self.kakoune-unwrapped-git { plugins = [ ]; };
 
   kakoune-lsp = super.kakoune-lsp.overrideAttrs (old: {
     version = kakouneLspMeta.version;
