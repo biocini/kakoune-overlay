@@ -854,7 +854,7 @@
     "sha256": "1zyhnbwlcfqvdsvwbkjxavahyy8k4p759jc7bbf8nz1sn88ib7x6",
     "version": "2026-01-21",
     "branch": "master",
-    "description": "Plugin for Kakoune editor",
+    "description": "Kakoune support for rendering ANSI-colored text",
     "license": ""
   },
   "parinfer-rust": {
@@ -865,7 +865,7 @@
     "sha256": "07pnh7fqmvrn1vaqwcwav02688vmnv9i911f6irg2za67inmw72s",
     "version": "2026-01-03",
     "branch": "master",
-    "description": "Plugin for Kakoune editor",
+    "description": "Rust port of parinfer for Lisp-like language indentation",
     "license": ""
   },
   "kamp": {
@@ -1514,7 +1514,7 @@
     "sha256": "0dnzhgjn2vxys3v950655w39dmakxfxy5yb9pz2zny2p3c73xmxs",
     "version": "2022-09-07",
     "branch": "master",
-    "description": "Plugin for Kakoune editor",
+    "description": "Structural selections for Kakoune",
     "license": ""
   },
   "replace-mode": {
@@ -1624,7 +1624,7 @@
     "sha256": "093fp5xrmkvj2sxc28yd14nr3998w9dihg9xym7kzvirfzaw9lv1",
     "version": "2022-06-25",
     "branch": "main",
-    "description": "Plugin for Kakoune editor",
+    "description": "VS Code Dark+ theme port for Kakoune",
     "license": ""
   },
   "kakoune-idris": {
@@ -2196,7 +2196,7 @@
     "sha256": "0a0p5r4fxlfrk5jar7lbgk4as0djhc0n7wvnawc1kcn710q0dhvb",
     "version": "2021-05-24",
     "branch": "master",
-    "description": "Plugin for Kakoune editor",
+    "description": "Jira syntax highlighting for Kakoune",
     "license": ""
   },
   "kakoune-mint": {
@@ -2339,7 +2339,7 @@
     "sha256": "1137l7r3c09brjy8cw1k751b9dbd0wv6grp9fxlx3c1a6isnf29z",
     "version": "2021-01-25",
     "branch": "main",
-    "description": "Plugin for Kakoune editor",
+    "description": "MediaWiki syntax highlighting for Kakoune",
     "license": ""
   },
   "kakoune-show-matching-insert": {
@@ -2383,7 +2383,7 @@
     "sha256": "12y1rfhsa1qhf0hcg80v0m0nbd67i6nlzaiw7ni5w88dpqmx74px",
     "version": "2020-12-07",
     "branch": "master",
-    "description": "Plugin for Kakoune editor",
+    "description": "Syntax highlighting for the zzz data format in Kakoune",
     "license": ""
   },
   "joule": {
@@ -2394,7 +2394,7 @@
     "sha256": "0a2vc2kldw3p294xdh2j8w5kpvrgff9zz67r3hz4c06wwkm5rbdf",
     "version": "2020-12-05",
     "branch": "master",
-    "description": "Plugin for Kakoune editor",
+    "description": "Colorscheme inspired by Ayu for Kakoune",
     "license": ""
   },
   "insert-indicator": {
@@ -3197,7 +3197,7 @@
     "sha256": "13in441crka7f80hckfgs95anr5f5gak74pclqv6rj65v2awpf2k",
     "version": "2018-12-10",
     "branch": "master",
-    "description": "Plugin for Kakoune editor",
+    "description": "Collection of useful configuration options and commands for Kakoune",
     "license": ""
   },
   "kakoune-cscope": {

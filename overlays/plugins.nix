@@ -72,7 +72,8 @@ let
     in
     if inNixpkgs then
       # Plugin exists in nixpkgs: override src and version only.
-      # Nixpkgs' own overrides (preFixup, buildInputs, etc.) are preserved.
+      # Nixpkgs' own meta (description, license, etc.) is preserved;
+      # only homepage is updated to point to the upstream repo.
       super.kakounePlugins.${nixpkgsName}.overrideAttrs (
         old:
         {
@@ -82,9 +83,6 @@ let
             (old.meta or { })
             // {
               inherit homepage;
-            }
-            // lib.optionalAttrs (meta ? description && meta.description != "") {
-              description = meta.description;
             }
             // lib.optionalAttrs (meta ? license && meta.license != "") {
               license = meta.license;
