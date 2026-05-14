@@ -1,0 +1,92 @@
+{
+  "_meta": {
+    "last_full_audit": "2026-05-14",
+    "audit_tool_version": "1.0",
+    "total_plugins": 312,
+    "pass_count": 306,
+    "warn_count": 5,
+    "fail_count": 0
+  },
+  "explain-shell": {
+    "last_audited": "2026-05-14",
+    "verdict": "WARN",
+    "findings": "Plugin calls curl to mankier.com API for shell command explanation. This is a legitimate public API call with no sensitive data transmission.",
+    "flagged_lines": [
+      {
+        "file": "explain-shell.kak",
+        "line": 15,
+        "pattern": "curl -Gs \"https://www.mankier.com/api/explain/?cols=${cols}\""
+      }
+    ]
+  },
+  "kakoune-cr": {
+    "last_audited": "2026-05-14",
+    "verdict": "PASS",
+    "findings": "False positive — curl appears only in a comment, not active code.",
+    "flagged_lines": [
+      {
+        "file": "example.kak",
+        "line": 85,
+        "pattern": "# curl -sSL https://github.com/rxi/json.lua/raw/master/json.lua"
+      }
+    ]
+  },
+  "kakoune-extra": {
+    "last_audited": "2026-05-14",
+    "verdict": "WARN",
+    "findings": "Plugin calls curl to GitHub releases for version checking. Legitimate but hardcoded external URL.",
+    "flagged_lines": [
+      {
+        "file": "versioncheck.kak",
+        "line": 7,
+        "pattern": "curl -si 'https://github.com/mawww/kakoune/releases/latest'"
+      }
+    ]
+  },
+  "kakoune-npm": {
+    "last_audited": "2026-05-14",
+    "verdict": "WARN",
+    "findings": "Plugin calls curl to npm registry for package info. Legitimate but hardcoded external URL.",
+    "flagged_lines": [
+      {
+        "file": "npm.kak",
+        "line": 12,
+        "pattern": "curl -s https://registry.npmjs.org/\"$kak_selection\""
+      }
+    ]
+  },
+  "pastebin": {
+    "last_audited": "2026-05-14",
+    "verdict": "WARN",
+    "findings": "Plugin calls curl to paste.rs, dpaste.org, and paste.mozilla.org. These are legitimate paste services; the plugin's purpose is to upload selections to pastebins.",
+    "flagged_lines": [
+      {
+        "file": "pastebin.kak",
+        "line": 3,
+        "pattern": "curl --data-binary @- https://paste.rs/"
+      },
+      {
+        "file": "pastebin.kak",
+        "line": 17,
+        "pattern": "curl -F \"format=url\" -F \"content=<-\" https://dpaste.org/api/"
+      },
+      {
+        "file": "pastebin.kak",
+        "line": 24,
+        "pattern": "curl -F \"format=url\" -F \"content=<-\" https://paste.mozilla.org/api/"
+      }
+    ]
+  },
+  "peneira-filters": {
+    "last_audited": "2026-05-14",
+    "verdict": "PASS",
+    "findings": "False positive — $HOME is used as a search path for fd, not for data exfiltration or installation.",
+    "flagged_lines": [
+      {
+        "file": "peneira-git-projects.kak",
+        "line": 9,
+        "pattern": "fd --type d --hidden '^.git$' $HOME"
+      }
+    ]
+  }
+}

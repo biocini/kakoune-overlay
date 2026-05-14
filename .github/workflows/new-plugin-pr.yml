@@ -68,9 +68,12 @@ jobs:
 
           For each plugin in /tmp/new-plugins.json:
 
-          1. Fetch all `.kak` files from the plugin's GitHub source tree
-             via `curl` using the owner/repo/rev from the manifest entry.
-          2. Apply the security review criteria from the skill.
+          1. Check `docs/security-audit.json` for an existing entry. If
+             the plugin was previously audited with PASS and the upstream
+             source has not changed, reuse the existing verdict.
+          2. Otherwise, fetch all `.kak` files from the plugin's GitHub
+             source tree via `curl` using the owner/repo/rev from the
+             manifest entry and apply the security review criteria.
           3. Write your verdict (`PASS`, `WARN`, or `FAIL`) and findings
              to `/tmp/security-report.json` as a JSON object keyed by
              plugin name, with fields:
@@ -78,7 +81,10 @@ jobs:
              - `findings`: string, empty if PASS
              - `flagged_lines`: array of {file, line, pattern} objects,
                empty if PASS
-          4. If any plugin receives a `FAIL` verdict, write the string
+          4. Append the new audit entry to `docs/security-audit.json`,
+             preserving all existing entries. Include `last_audited`
+             with today's date.
+          5. If any plugin receives a `FAIL` verdict, write the string
              `FAIL` to `/tmp/security-verdict`. Otherwise write `PASS`.
              Continue reviewing remaining plugins even after a FAIL.
           TASK_EOF
@@ -139,12 +145,14 @@ jobs:
 
           if [ "$HAS_FAIL" = "false" ] && [ -f /tmp/msg.txt ]; then
             git add repos/plugins/manifest.json \
-              repos/plugins/overrides.nix
+              repos/plugins/overrides.nix \
+              docs/security-audit.json || true
             git commit -F /tmp/msg.txt
             git push -u origin "$BRANCH"
           elif [ "$HAS_FAIL" = "false" ]; then
             git add repos/plugins/manifest.json \
-              repos/plugins/overrides.nix
+              repos/plugins/overrides.nix \
+              docs/security-audit.json || true
             cat > /tmp/fallback-msg.txt << 'MSG'
             feat(plugins): add newly discovered plugins
 
@@ -156,6 +164,7 @@ jobs:
             git push -u origin "$BRANCH"
           else
             echo "Security FAIL detected. Creating PR for review without manifest changes."
+            git add docs/security-audit.json || true
             git commit --allow-empty -F /tmp/msg.txt 2>/dev/null || \
               git commit --allow-empty -m "security: flag new plugins for human review [SECURITY FAIL]"
             git push -u origin "$BRANCH"

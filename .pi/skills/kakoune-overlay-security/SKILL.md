@@ -204,6 +204,32 @@ Write findings as a JSON object keyed by plugin normalized name:
 `flagged_lines` is empty for `PASS`. It must contain at least one entry
 for `FAIL`.
 
+## Audit database
+
+A committed security audit database lives at `docs/security-audit.json`.
+Before reviewing a plugin, check whether it already has an entry. If the
+entry is a `PASS` and the upstream source has not changed since
+`last_audited`, you may reuse the existing verdict. If the source has
+changed, or if there is no entry, perform a fresh review and append the
+result to the database.
+
+The database follows the same schema as the output format above, with an
+additional `last_audited` field:
+
+```json
+{
+  "plugin-name": {
+    "last_audited": "2026-05-14",
+    "verdict": "PASS|WARN|FAIL",
+    "findings": "...",
+    "flagged_lines": [...]
+  }
+}
+```
+
+Update the database after every review so findings are persistent across
+PRs and sessions.
+
 ## Tooling constraints
 
 This skill is designed to be used in an environment with only `curl` and
