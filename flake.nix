@@ -1,5 +1,5 @@
 {
-  description = "Kakoune overlay — nightly git builds of kakoune and its ecosystem";
+  description = "Kakoune overlay — stable releases and nightly git builds of kakoune and its ecosystem";
 
   nixConfig = {
     extra-substituters = [ "https://kakoune-overlay.cachix.org" ];
@@ -36,7 +36,9 @@
         {
           inherit (overlayed)
             kakoune
+            kakoune-git
             kakoune-unwrapped
+            kakoune-unwrapped-git
             kakoune-lsp
             kak-tree-sitter
             kak-tree-sitter-unwrapped

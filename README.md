@@ -1,7 +1,8 @@
 # kakoune-overlay
 
-A Nix flake providing nightly git builds of Kakoune and its ecosystem,
-analogous to [neovim-nightly-overlay](https://github.com/nix-community/neovim-nightly-overlay)
+A Nix flake providing both stable (latest release) and nightly git builds
+of Kakoune and its ecosystem, analogous to
+[neovim-nightly-overlay](https://github.com/nix-community/neovim-nightly-overlay)
 and [emacs-overlay](https://github.com/nix-community/emacs-overlay).
 
 ## Quickstart
@@ -21,7 +22,8 @@ Add the overlay to your flake:
         overlays = [ kakoune-overlay.overlays.default ];
       };
     in {
-      # pkgs.kakoune is now built from the latest git commit
+      # pkgs.kakoune        — latest stable release (currently v2026.04.12)
+      # pkgs.kakoune-git    — latest master commit
       # pkgs.kakounePlugins.* are updated from upstream git as well
     };
 }
@@ -79,17 +81,29 @@ of them as a whole overlay or only one of them.
 
 ### `pkgs` overlay
 
-#### Kakoune from Git
+#### Kakoune editor
 
-This overlay provides the Kakoune editor built from the latest `master`
-branch. These attributes are named `kakoune`, `kakoune-lsp`, and
-`kak-tree-sitter`. They are updated automatically from upstream git.
+This overlay provides two builds of the Kakoune editor:
 
-| Attribute         | Source                                                                       | Description             |
-| ----------------- | ---------------------------------------------------------------------------- | ----------------------- |
-| `kakoune`         | [mawww/kakoune](https://github.com/mawww/kakoune)                            | The editor              |
-| `kakoune-lsp`     | [kakoune-lsp/kakoune-lsp](https://github.com/kakoune-lsp/kakoune-lsp)        | LSP client              |
-| `kak-tree-sitter` | [~hadronized/kak-tree-sitter](https://git.sr.ht/~hadronized/kak-tree-sitter) | Tree-sitter integration |
+- **`kakoune`** — built from the latest stable release tag
+- **`kakoune-git`** — built from the latest `master` commit
+
+Both are proper wrapper derivations (like nixpkgs' `pkgs.kakoune`),
+so `KAKOUNE_RUNTIME` and plugin integration work identically.
+The unwrapped variants (`kakoune-unwrapped`, `kakoune-unwrapped-git`)
+are also exposed if you need the raw editor derivation.
+
+Companion tools (`kakoune-lsp`, `kak-tree-sitter`) are built from
+upstream git and updated automatically.
+
+| Attribute               | Source                                                                       | Description                   |
+| ----------------------- | ---------------------------------------------------------------------------- | ----------------------------- |
+| `kakoune`               | [mawww/kakoune](https://github.com/mawww/kakoune) (latest release tag)       | Stable editor                 |
+| `kakoune-git`           | [mawww/kakoune](https://github.com/mawww/kakoune) (latest `master`)          | Git editor                    |
+| `kakoune-unwrapped`     | [mawww/kakoune](https://github.com/mawww/kakoune) (latest release tag)       | Stable editor (unwrapped)     |
+| `kakoune-unwrapped-git` | [mawww/kakoune](https://github.com/mawww/kakoune) (latest `master`)          | Git editor (unwrapped)        |
+| `kakoune-lsp`           | [kakoune-lsp/kakoune-lsp](https://github.com/kakoune-lsp/kakoune-lsp)        | LSP client                    |
+| `kak-tree-sitter`       | [~hadronized/kak-tree-sitter](https://git.sr.ht/~hadronized/kak-tree-sitter) | Tree-sitter integration       |
 
 ### `plugins` overlay
 
@@ -152,7 +166,8 @@ The update workflow mirrors [emacs-overlay's CI pattern](https://github.com/nix-
 ## Local development
 
 ```bash
-nix build .#kakoune              # build editor from latest git
+nix build .#kakoune              # build stable editor
+nix build .#kakoune-git          # build editor from latest master
 nix build .#kakoune-lsp          # build LSP client
 nix build .#kak-tree-sitter      # build tree-sitter integration
 nix develop                      # enter dev shell with all packages
