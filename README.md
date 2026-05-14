@@ -202,8 +202,8 @@ or `nix-prefetch-git` to get the hash manually.
 
 This repository was created and is maintained with assistance from AI
 systems. The initial architecture, Nix overlay design, and CI workflows
-were developed in collaboration with the [pi](https://github.com/biocini/pi)
-coding agent. Ongoing maintenance — including plugin discovery, security
+were developed in collaboration with the [pi](https://github.com/earendil-works/pi)
+coding agent (Kimi 2.6). Ongoing maintenance — including plugin discovery, security
 vetting, dependency auditing, and documentation updates — continues to
 involve AI-assisted workflows. Specifically:
 
@@ -214,7 +214,9 @@ involve AI-assisted workflows. Specifically:
   scans each candidate plugin's `.kak` source for outbound network calls,
   sensitive data access, obfuscated shell, and suspicious repo metadata.
   Plugins flagged with a `FAIL` verdict block manifest updates and open a
-  `[SECURITY FAIL]` PR for human review.
+  `[SECURITY FAIL]` PR for human review. Audit findings are persisted in
+  `docs/security-audit.json` and reused across sessions when upstream source
+  has not changed.
 - **Build-time path rewrites** (`repos/plugins/overrides.nix`) are
   audited for hardcoded paths that won't resolve from the Nix store
 - **Commits** in this repo follow Conventional Commits with a
@@ -240,9 +242,12 @@ directly.
 │   ├── default.nix        # Composes pkgs.nix + plugins.nix
 │   ├── pkgs.nix           # Core package overrides
 │   └── plugins.nix        # kakounePlugins overlay from manifest.json
+├── docs/
+│   └── security-audit.json     # Persisted security audit findings
 ├── repos/
 │   ├── core/
-│   │   ├── kakoune.json          # Metadata: rev, sha256, version
+│   │   ├── kakoune.json          # Metadata: rev, sha256, version (git)
+│   │   ├── kakoune-stable.json   # Metadata: rev, sha256, version (stable)
 │   │   ├── kakoune-lsp.json
 │   │   ├── kak-tree-sitter.json
 │   │   └── update                # Bash updater for core packages
@@ -251,6 +256,7 @@ directly.
 │       ├── overrides.nix         # Build-time path rewrites
 │       ├── discover              # Discover new plugins from GitHub
 │       └── update                # Bash updater for existing plugins
+├── .pi/skills/            # Agent skills (security, deps)
 ├── update                 # Top-level delegator: ./update <repo>
 └── .github/workflows/
     ├── update.yml           # CI: matrix update of core + plugins
