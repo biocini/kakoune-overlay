@@ -348,7 +348,7 @@
     "sha256": "1g8avqc8wjkpdn6nmhg4aq2ljwn3mjdhsn5da36w0ybkwyb79g0x",
     "version": "2025-11-17",
     "branch": "main",
-    "description": "Plugin for Kakoune editor",
+    "description": "Typst language support for Kakoune",
     "license": ""
   },
   "reasymotion": {
@@ -1569,7 +1569,7 @@
     "sha256": "084944l03jzwxvnfb9b3bs3c7hd884vkrjdpyrasai77qjx7d4kb",
     "version": "2022-04-22",
     "branch": "main",
-    "description": "Plugin for Kakoune editor",
+    "description": "V language support for Kakoune",
     "license": ""
   },
   "quick-highlight": {
@@ -3021,7 +3021,7 @@
     "sha256": "1w0nmhsgchjga4by9ch9md3pdc1bwn0p157g6zwnfpj7lnaahsmq",
     "version": "2019-05-06",
     "branch": "master",
-    "description": "Plugin for Kakoune editor",
+    "description": "Zig language support for Kakoune",
     "license": ""
   },
   "zig-kak": {
