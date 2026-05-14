@@ -39,7 +39,7 @@ Read the plugin's main `.kak` file(s) and look for paths that assume a
 specific filesystem layout:
 
 ```bash
-curl -sL "https://raw.githubusercontent.com/$owner/$repo/$branch/$plugin.kak" | \
+curl -sL "https://raw.githubusercontent.com/$owner/$repo/$branch/rc.kak" | \
   grep -E '\$kak_config|~/|\.\./'
 ```
 
@@ -56,12 +56,12 @@ Use the plugin's **normalized name** (as it appears in
 `repos/plugins/manifest.json` keys):
 
 ```nix
-{ _pkgs }:
+{ pkgs }:
 {
-  my-plugin = {
+  my-plugin-kak = {
     postInstall = ''
-      substituteInPlace $out/share/kak/autoload/plugins/my-plugin/rc.kak \
-        --replace '$kak_config/my-script.py' "$out/share/kak/autoload/plugins/my-plugin/my-script.py"
+      substituteInPlace $out/share/kak/autoload/plugins/my-plugin-kak/rc.kak \
+        --replace '$kak_config/my-script.py' "$out/share/kak/autoload/plugins/my-plugin-kak/my-script.py"
     '';
   };
 }
