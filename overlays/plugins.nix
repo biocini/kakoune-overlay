@@ -78,13 +78,17 @@ let
         {
           version = meta.version;
           src = newSrc;
-          meta = (old.meta or { }) // {
-            inherit homepage;
-          } // lib.optionalAttrs (meta ? description && meta.description != "") {
-            description = meta.description;
-          } // lib.optionalAttrs (meta ? license && meta.license != "") {
-            license = meta.license;
-          };
+          meta =
+            (old.meta or { })
+            // {
+              inherit homepage;
+            }
+            // lib.optionalAttrs (meta ? description && meta.description != "") {
+              description = meta.description;
+            }
+            // lib.optionalAttrs (meta ? license && meta.license != "") {
+              license = meta.license;
+            };
         }
         // (nixpkgsFixups.${nixpkgsName} or { })
       )

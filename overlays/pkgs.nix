@@ -25,6 +25,7 @@ let
       throw "Unknown source type '${meta.type}'";
 
   kakouneMeta = lib.importJSON ../repos/core/kakoune.json;
+  kakouneStableMeta = lib.importJSON ../repos/core/kakoune-stable.json;
   kakouneLspMeta = lib.importJSON ../repos/core/kakoune-lsp.json;
   kakTreeSitterMeta = lib.importJSON ../repos/core/kak-tree-sitter.json;
 
@@ -32,7 +33,14 @@ let
 
 in
 {
+  # Stable: built from the latest release tag
   kakoune-unwrapped = super.kakoune-unwrapped.overrideAttrs (old: {
+    version = kakouneStableMeta.version;
+    src = fetchFromRepo kakouneStableMeta;
+  });
+
+  # Git: built from latest master commit
+  kakoune-unwrapped-git = super.kakoune-unwrapped.overrideAttrs (old: {
     version = kakouneMeta.version;
     src = fetchFromRepo kakouneMeta;
     postPatch = ''

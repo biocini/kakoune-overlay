@@ -35,6 +35,31 @@ update_github() {
         > "$file"
 }
 
+update_github_tag() {
+    local owner="$1" repo="$2" file="$3"
+    echo "Updating $owner/$repo (latest tag)"
+
+    local tag_data
+    tag_data=$(curl -sL "https://api.github.com/repos/$owner/$repo/releases/latest" | \
+        jq -r '.tag_name')
+
+    local digest
+    digest=$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/refs/tags/$tag_data.tar.gz")
+
+    # Strip leading 'v' from version string
+    local version="${tag_data#v}"
+
+    jq -n \
+        --arg type "github" \
+        --arg owner "$owner" \
+        --arg repo "$repo" \
+        --arg rev "$tag_data" \
+        --arg sha256 "$digest" \
+        --arg version "$version" \
+        '{type: $type, owner: $owner, repo: $repo, rev: $rev, sha256: $sha256, version: $version}' \
+        > "$file"
+}
+
 update_git() {
     local url="$1" file="$2"
     echo "Updating $url"
@@ -58,5 +83,6 @@ update_git() {
 }
 
 update_github "mawww" "kakoune" "kakoune.json"
+update_github_tag "mawww" "kakoune" "kakoune-stable.json"
 update_github "kakoune-lsp" "kakoune-lsp" "kakoune-lsp.json"
 update_git "https://git.sr.ht/~hadronized/kak-tree-sitter" "kak-tree-sitter.json"
