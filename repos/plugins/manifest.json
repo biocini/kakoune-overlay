@@ -200,6 +200,17 @@
     "type": "github",
     "version": "2023-02-27"
   },
+  "case-kak": {
+    "description": "",
+    "in-nixpkgs": true,
+    "license": "",
+    "owner": "FlyingWombat",
+    "repo": "case.kak",
+    "rev": "6f1511820aa3abfa118e0f856118adc8113e2185",
+    "sha256": "002njrlwgakqgp74wivbppr9qyn57dn4n5bxkr6k6nglk9qndwdp",
+    "type": "gitlab",
+    "version": "2020-01-30"
+  },
   "coderun": {
     "branch": "main",
     "description": "\u23ef\ufe0f Kakoune code runner",
@@ -652,6 +663,16 @@
     "sha256": "066yj438wm1hpp5v1r1ll5jbz3wpjdsahxywamdm4lxv2f7p2wnj",
     "type": "github",
     "version": "2026-04-04"
+  },
+  "hop-kak": {
+    "description": "hinting brought to Kakoune selections",
+    "in-nixpkgs": true,
+    "license": "",
+    "rev": "7314ec64809a69e0044ba7ec57a18b43e3b5f005",
+    "sha256": "0wck4pn3p74fy1w1rx9hc5in7h4ryqp4kcw936blaziy8cx657gw",
+    "type": "git",
+    "url": "https://git.sr.ht/~hadronized/hop.kak",
+    "version": "2023-12-14"
   },
   "hy": {
     "branch": "main",
@@ -1219,6 +1240,17 @@
     "type": "github",
     "version": "2019-01-16"
   },
+  "kakoune-catppuccin": {
+    "description": "Soothing pastel theme for Kakoune",
+    "in-nixpkgs": true,
+    "license": "",
+    "owner": "catppuccin",
+    "repo": "kakoune",
+    "rev": "abb4e7c2939361825a69cf02bec9e6b782adf5cc",
+    "sha256": "12nc165qy4kkdaww34kxbnvcqja3nx7l1vjd3lrhlw3fp4p7j94v",
+    "type": "github",
+    "version": "2025-07-31"
+  },
   "kakoune-cd": {
     "branch": "master",
     "description": "Commands to change or print the working directory with project-root detection",
@@ -1395,6 +1427,17 @@
     "sha256": "05ham7xjv3ayf6r83ccgz48lagwhaf5g09p9qds9na39kg76czdv",
     "type": "github",
     "version": "2020-06-20"
+  },
+  "kakoune-extra-filetypes": {
+    "description": "",
+    "in-nixpkgs": true,
+    "license": "",
+    "owner": "kakoune-editor",
+    "repo": "kakoune-extra-filetypes",
+    "rev": "8ffeec08068edfee42e076c5f6d56a54a498bad2",
+    "sha256": "1v87aqfk2jcysbdls3mh2v1yafk1albbinfxsxp11m4nxd2b9agl",
+    "type": "github",
+    "version": "2021-05-16"
   },
   "kakoune-factor": {
     "branch": "main",
@@ -1889,6 +1932,7 @@
     "repo": "kakoune-rainbow",
     "rev": "63097fbf478217f8b5aa4f85eaa26c95d7c5243e",
     "sha256": "1hx79mxrajnkxk2f1q38zydgjhf5fb3kwmwvrmjv861rqqpbm49f",
+    "skip": true,
     "type": "github",
     "version": "2021-03-07"
   },
@@ -2112,6 +2156,17 @@
     "sha256": "1spaspq6pvm8ghs9vn8r2j0w90pyp6a55hlqfyldr6q6ymvjmnbn",
     "type": "github",
     "version": "2023-04-20"
+  },
+  "kakoune-state-save": {
+    "description": "Help Kakoune save and restore state between sessions",
+    "in-nixpkgs": true,
+    "license": "",
+    "owner": "Screwtapello",
+    "repo": "kakoune-state-save",
+    "rev": "e8b6c269ac91eab45b0fe0d2b1f5dd49515ecd00",
+    "sha256": "11g2b8aac032q1mns99vrx0rl9rwlinfkim6rkc910y3sk8yfj8j",
+    "type": "gitlab",
+    "version": "2021-06-20"
   },
   "kakoune-stylus": {
     "branch": "master",
@@ -2877,6 +2932,16 @@
     "sha256": "1pcli3qgmhia6lmmjy1i71w59zv4d7psrisx0fzdj3v6lnkvgmz5",
     "type": "github",
     "version": "2022-07-07"
+  },
+  "quickscope-kak": {
+    "description": "Highlight f and t jump positions",
+    "in-nixpkgs": true,
+    "license": "",
+    "rev": "2316ef18d7dc4c35b8b620f0307ca218e771af38",
+    "sha256": "13hcnnbhl827m9nkga23i2jj1fqa8xdj8dp5z86k7x8j1lhk42hn",
+    "type": "git",
+    "url": "https://git.sr.ht/~voroskoi/quickscope.kak",
+    "version": "2020-12-09"
   },
   "raku": {
     "branch": "master",
