@@ -96,14 +96,14 @@ are also exposed if you need the raw editor derivation.
 Companion tools (`kakoune-lsp`, `kak-tree-sitter`) are built from
 upstream git and updated automatically.
 
-| Attribute               | Source                                                                       | Description                   |
-| ----------------------- | ---------------------------------------------------------------------------- | ----------------------------- |
-| `kakoune`               | [mawww/kakoune](https://github.com/mawww/kakoune) (latest release tag)       | Stable editor                 |
-| `kakoune-git`           | [mawww/kakoune](https://github.com/mawww/kakoune) (latest `master`)          | Git editor                    |
-| `kakoune-unwrapped`     | [mawww/kakoune](https://github.com/mawww/kakoune) (latest release tag)       | Stable editor (unwrapped)     |
-| `kakoune-unwrapped-git` | [mawww/kakoune](https://github.com/mawww/kakoune) (latest `master`)          | Git editor (unwrapped)        |
-| `kakoune-lsp`           | [kakoune-lsp/kakoune-lsp](https://github.com/kakoune-lsp/kakoune-lsp)        | LSP client                    |
-| `kak-tree-sitter`       | [~hadronized/kak-tree-sitter](https://git.sr.ht/~hadronized/kak-tree-sitter) | Tree-sitter integration       |
+| Attribute               | Source                                                                       | Description               |
+| ----------------------- | ---------------------------------------------------------------------------- | ------------------------- |
+| `kakoune`               | [mawww/kakoune](https://github.com/mawww/kakoune) (latest release tag)       | Stable editor             |
+| `kakoune-git`           | [mawww/kakoune](https://github.com/mawww/kakoune) (latest `master`)          | Git editor                |
+| `kakoune-unwrapped`     | [mawww/kakoune](https://github.com/mawww/kakoune) (latest release tag)       | Stable editor (unwrapped) |
+| `kakoune-unwrapped-git` | [mawww/kakoune](https://github.com/mawww/kakoune) (latest `master`)          | Git editor (unwrapped)    |
+| `kakoune-lsp`           | [kakoune-lsp/kakoune-lsp](https://github.com/kakoune-lsp/kakoune-lsp)        | LSP client                |
+| `kak-tree-sitter`       | [~hadronized/kak-tree-sitter](https://git.sr.ht/~hadronized/kak-tree-sitter) | Tree-sitter integration   |
 
 ### `plugins` overlay
 
@@ -170,7 +170,6 @@ nix build .#kakoune              # build stable editor
 nix build .#kakoune-git          # build editor from latest master
 nix build .#kakoune-lsp          # build LSP client
 nix build .#kak-tree-sitter      # build tree-sitter integration
-nix develop                      # enter dev shell with all packages
 ```
 
 ### Updating sources locally

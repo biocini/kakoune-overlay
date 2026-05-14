@@ -45,11 +45,5 @@
             ;
         }
       );
-
-      devShells = forAllSystems (system: {
-        default = nixpkgs.legacyPackages.${system}.mkShell {
-          packages = builtins.attrValues self.packages.${system};
-        };
-      });
     };
 }
