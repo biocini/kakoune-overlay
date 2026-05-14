@@ -95,7 +95,8 @@ let
         meta = {
           inherit homepage;
           description = meta.description or "";
-        } // lib.optionalAttrs (meta ? license && meta.license != "") {
+        }
+        // lib.optionalAttrs (meta ? license && meta.license != "") {
           license = meta.license;
         };
         postInstall = customPostInstall;

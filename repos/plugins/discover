@@ -14,10 +14,20 @@ known_file="$TMPDIR/known-repos.txt"
 jq -r '.[] | "\(.owner)/\(.repo)"' "$manifest" 2>/dev/null | sort -u > "$known_file" || true
 
 # Fetch all repos from GitHub API as JSON Lines
+api_ok=false
 for page in 1 2 3 4; do
-  curl -sL "https://api.github.com/search/repositories?q=topic:kakoune+topic:plugin&sort=updated&order=desc&per_page=100&page=$page" | \
-    jq -c '.items[] | {full_name, default_branch, description, license: (.license.spdx_id // "")}'
+  page_file="$TMPDIR/page-$page.json"
+  if curl -fsL "https://api.github.com/search/repositories?q=topic:kakoune+topic:plugin&sort=updated&order=desc&per_page=100&page=$page" > "$page_file" 2>/dev/null; then
+    jq -c '.items[] | {full_name, default_branch, description, license: (.license.spdx_id // "")}' "$page_file"
+  else
+    echo "    WARN: failed to fetch GitHub API page $page" >&2
+  fi
 done > "$TMPDIR/repos.jsonl"
+
+if [ ! -s "$TMPDIR/repos.jsonl" ]; then
+  echo "ERROR: no repos fetched from GitHub API" >&2
+  exit 1
+fi
 
 # Find repos not in manifest
 new_repos="$TMPDIR/new-repos.txt"
@@ -51,14 +61,24 @@ while IFS= read -r item; do
     continue
   fi
 
-  # Fetch latest commit via Atom feed
+  # Fetch latest commit via Atom feed with retry on rate-limit
   feed_file="$TMPDIR/feed-${name}.xml"
-  if ! curl -sL "https://github.com/$full_name/commits/$branch.atom" > "$feed_file" 2>/dev/null; then
+  feed_ok=false
+  for attempt in 1 2 3; do
+    if curl -fsL "https://github.com/$full_name/commits/$branch.atom" > "$feed_file" 2>/dev/null; then
+      feed_ok=true
+      break
+    fi
+    sleep "$((attempt * 2))"
+  done
+  if [ "$feed_ok" = "false" ]; then
+    echo "    WARN: failed to fetch feed for $full_name after 3 attempts" >&2
     continue
   fi
 
   commit_sha=$(grep -m1 '<id>tag:github.com,2008:Grit::Commit/' "$feed_file" | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || true)
   if [ -z "$commit_sha" ] || [ "$commit_sha" = "null" ]; then
+    echo "    WARN: no commit found in feed for $full_name" >&2
     continue
   fi
 
@@ -66,6 +86,7 @@ while IFS= read -r item; do
 
   # Prefetch hash
   if ! hash=$(nix-prefetch-url --unpack "https://github.com/$full_name/archive/$commit_sha.tar.gz" 2>/dev/null); then
+    echo "    WARN: nix-prefetch-url failed for $full_name" >&2
     continue
   fi
 
@@ -85,5 +106,5 @@ while IFS= read -r item; do
 
   echo "$name"
 
-  sleep 0.2
+  sleep 1
 done < "$new_repos"
