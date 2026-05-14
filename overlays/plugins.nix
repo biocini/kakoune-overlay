@@ -11,6 +11,11 @@ let
   manifest = lib.importJSON ../repos/plugins/manifest.json;
   overrides = import ../repos/plugins/overrides.nix { pkgs = super; };
 
+  # Nixpkgs plugins whose stale hooks need clearing when src is updated.
+  nixpkgsFixups = {
+    kakoune-rainbow = { preFixup = ""; };
+  };
+
   # Map our normalized plugin names to nixpkgs' names where they differ.
   nameMap = {
     active-window = "active-window-kak";
@@ -81,7 +86,7 @@ let
         meta = (old.meta or { }) // {
           inherit homepage;
         };
-      })
+      } // (nixpkgsFixups.${nixpkgsName} or { }))
     else
       # New plugin: build from scratch.  Only postInstall path rewrites
       # are supported here — runtime binary deps are the user's
