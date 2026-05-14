@@ -48,7 +48,9 @@ This convention must be consistent between the manifest and any bootstrap script
 
 ## Verification
 
-Before declaring local changes complete, run `nix flake check --all-systems`.
+Before declaring local changes complete, run `nix flake check` (native
+system only). Cross-platform builds (`--all-systems`) require remote
+builders or QEMU that may not be available on a local macOS machine.
 
 For PRs opened by the new-plugin workflow, CI runs `nix flake check`
 automatically — do not run it manually in the workflow.

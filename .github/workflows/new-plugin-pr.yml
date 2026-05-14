@@ -156,9 +156,9 @@ jobs:
             git push -u origin "$BRANCH"
           else
             echo "Security FAIL detected. Creating PR for review without manifest changes."
-            git add repos/plugins/manifest.json \
-              repos/plugins/overrides.nix || true
-            git push -u origin "$BRANCH" || true
+            git commit --allow-empty -F /tmp/msg.txt 2>/dev/null || \
+              git commit --allow-empty -m "security: flag new plugins for human review [SECURITY FAIL]"
+            git push -u origin "$BRANCH"
           fi
 
           NEW_PLUGINS=$(./repos/plugins/discover)

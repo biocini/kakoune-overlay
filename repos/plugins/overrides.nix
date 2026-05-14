@@ -26,7 +26,7 @@
 #
 # Missing plugins are treated as no-op (no postInstall).
 
-{ _pkgs }:
+{ pkgs }:
 {
   # 2025-12-12 — Lean 4 language support
   # Rewrites hardcoded $kak_config-relative path to absolute store path.
