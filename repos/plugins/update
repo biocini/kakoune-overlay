@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 SCRIPTPATH="$(cd "$(dirname "$0")"; pwd -P)"
 cd "$SCRIPTPATH"
@@ -8,26 +8,28 @@ TMPDIR=$(mktemp -d)
 trap 'rm -rf "$TMPDIR"' EXIT
 
 manifest="manifest.json"
+updated=0
+skipped=0
+failed=0
 
-echo "=== Updating existing plugins ==="
+echo "=== Checking for plugin updates ==="
 plugins=$(jq -r 'keys[]' "$manifest")
 
 for plugin in $plugins; do
     meta=$(jq --arg p "$plugin" '.[$p]' "$manifest")
     type=$(echo "$meta" | jq -r '.type')
+    current_rev=$(echo "$meta" | jq -r '.rev')
 
     if [ "$type" = "github" ]; then
         owner=$(echo "$meta" | jq -r '.owner')
         repo=$(echo "$meta" | jq -r '.repo')
         branch=$(echo "$meta" | jq -r '.branch // "master"')
-        echo "Updating $owner/$repo ($branch)"
 
         feed=$(curl -sL "https://github.com/$owner/$repo/commits/$branch.atom")
         commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || true)
 
         # Fallback to main if stored branch returns empty
         if [ -z "$commit_sha" ] && [ "$branch" != "main" ]; then
-            echo "    Empty feed for '$branch', trying 'main'..."
             feed=$(curl -sL "https://github.com/$owner/$repo/commits/main.atom")
             commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || true)
             if [ -n "$commit_sha" ]; then
@@ -36,12 +38,17 @@ for plugin in $plugins; do
         fi
 
         if [ -z "$commit_sha" ]; then
-            echo "    WARNING: Could not get commit for $owner/$repo, skipping"
+            echo "  SKIP $plugin: could not fetch feed for $owner/$repo"
+            failed=$((failed + 1))
+            continue
+        fi
+
+        if [ "$commit_sha" = "$current_rev" ]; then
+            skipped=$((skipped + 1))
             continue
         fi
 
         version_date=$(echo "$feed" | grep -m1 '<updated>' | sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g' || true)
-
         digest=$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$commit_sha.tar.gz")
 
         jq --arg p "$plugin" \
@@ -52,13 +59,20 @@ for plugin in $plugins; do
            '.[$p].rev = $rev | .[$p].sha256 = $sha256 | .[$p].version = $version | .[$p].branch = $branch' \
            "$manifest" > "$TMPDIR/manifest.json"
         mv "$TMPDIR/manifest.json" "$manifest"
+        echo "  UPDATED $plugin: $current_rev -> $commit_sha"
+        updated=$((updated + 1))
 
     elif [ "$type" = "gitlab" ]; then
         owner=$(echo "$meta" | jq -r '.owner')
         repo=$(echo "$meta" | jq -r '.repo')
-        echo "Updating gitlab $owner/$repo"
 
         commit_sha=$(curl -sL "https://gitlab.com/api/v4/projects/$(printf '%s' "$owner/$repo" | jq -sRr @uri)/repository/commits?per_page=1" | jq -r '.[0].id')
+
+        if [ "$commit_sha" = "$current_rev" ]; then
+            skipped=$((skipped + 1))
+            continue
+        fi
+
         version_date=$(curl -sL "https://gitlab.com/api/v4/projects/$(printf '%s' "$owner/$repo" | jq -sRr @uri)/repository/commits/$commit_sha" | jq -r '.committed_date' | cut -dT -f1)
         digest=$(nix-prefetch-url --unpack "https://gitlab.com/$owner/$repo/-/archive/$commit_sha/$repo-$commit_sha.tar.gz")
 
@@ -69,13 +83,20 @@ for plugin in $plugins; do
            '.[$p].rev = $rev | .[$p].sha256 = $sha256 | .[$p].version = $version' \
            "$manifest" > "$TMPDIR/manifest.json"
         mv "$TMPDIR/manifest.json" "$manifest"
+        echo "  UPDATED $plugin: $current_rev -> $commit_sha"
+        updated=$((updated + 1))
 
     elif [ "$type" = "git" ]; then
         url=$(echo "$meta" | jq -r '.url')
-        echo "Updating $url"
 
         info=$(nix-prefetch-git --no-deepClone "$url")
         rev=$(echo "$info" | jq -r '.rev')
+
+        if [ "$rev" = "$current_rev" ]; then
+            skipped=$((skipped + 1))
+            continue
+        fi
+
         sha256=$(echo "$info" | jq -r '.sha256')
         version_date=$(echo "$info" | jq -r '.date' | cut -dT -f1)
 
@@ -86,5 +107,10 @@ for plugin in $plugins; do
            '.[$p].rev = $rev | .[$p].sha256 = $sha256 | .[$p].version = $version' \
            "$manifest" > "$TMPDIR/manifest.json"
         mv "$TMPDIR/manifest.json" "$manifest"
+        echo "  UPDATED $plugin: $current_rev -> $rev"
+        updated=$((updated + 1))
     fi
 done
+
+echo ""
+echo "=== Summary: $updated updated, $skipped up-to-date, $failed failed ==="
