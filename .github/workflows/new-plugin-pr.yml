@@ -1,3 +1,5 @@
+# New plugin discovery paused during Phase 1 manifest migration.
+# Re-enable after the update tooling is adjusted for the new schema.
 name: Propose new plugins
 
 on:

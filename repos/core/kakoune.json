@@ -1,7 +1,6 @@
 {
-  "type": "github",
-  "owner": "mawww",
-  "repo": "kakoune",
+  "fetcher": "github",
+  "repo": "mawww/kakoune",
   "rev": "86b8ac1032ce195067a28a3857490270a74fa604",
   "sha256": "05vyk3xik9czkqc4yhzb8ycmac4cljs96i2b5brgfjhwxpf3h61b",
   "version": "2026-05-11"

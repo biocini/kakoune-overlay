@@ -1,103 +1,86 @@
 self: super:
 let
-  inherit (super)
-    lib
-    fetchFromGitHub
-    fetchFromGitLab
-    fetchgit
-    ;
-  inherit (super.kakouneUtils) buildKakounePluginFrom2Nix;
+  inherit (super) lib;
+
+  fetch = import ./fetch.nix {
+    inherit (super)
+      lib
+      fetchFromGitHub
+      fetchFromGitLab
+      fetchgit
+      fetchFromCodeberg
+      fetchFromSourcehut
+      ;
+  };
 
   manifest = lib.importJSON ../repos/plugins/manifest.json;
   overrides = import ../repos/plugins/overrides.nix { pkgs = super; };
+  compiled = import ../repos/plugins/compiled.nix { pkgs = super; };
 
-  # Nixpkgs plugins whose stale hooks need clearing when src is updated.
-  nixpkgsFixups = {
-    kakoune-rainbow = {
-      preFixup = "";
-    };
-  };
-
-  # Map our normalized plugin names to nixpkgs' names where they differ.
-  # Normalization is just `tr '.' '-'`, so most .kak repos already match
-  # nixpkgs (e.g. fzf.kak -> fzf-kak).  Only discrepancies where the
-  # upstream repo name differs from nixpkgs need entries here.
-  nameMap = {
-    kakoune-buffers = "kak-buffers";
-  };
-
-  fetchFromRepo =
-    name: meta:
-    if meta.type == "github" then
-      fetchFromGitHub {
-        inherit (meta) owner repo rev;
-        sha256 = meta.sha256;
-      }
-    else if meta.type == "gitlab" then
-      fetchFromGitLab {
-        inherit (meta) owner repo rev;
-        sha256 = meta.sha256;
-      }
-    else if meta.type == "git" then
-      fetchgit {
-        inherit (meta) url rev;
-        sha256 = meta.sha256;
-        fetchSubmodules = meta.fetchSubmodules or false;
-        leaveDotGit = meta.leaveDotGit or false;
-      }
-    else
-      throw "Unknown source type '${meta.type}' for plugin ${name}";
+  isPluginDep = d: lib.hasPrefix "kakounePlugins." d;
 
   mkPlugin =
-    name: meta:
+    pname: meta:
     let
-      newSrc = fetchFromRepo name meta;
-      override = overrides.${name} or { };
-      customPostInstall = override.postInstall or "";
+      src = fetch.fetchFromManifest pname meta;
+      override = overrides.${pname} or { };
+      compiledFixup = compiled.${pname} or { };
 
-      nixpkgsName = nameMap.${name} or name;
-      inNixpkgs = builtins.hasAttr nixpkgsName super.kakounePlugins;
+      toolDeps = builtins.filter (d: !isPluginDep d) (meta.deps or [ ]);
+      pluginDepNames = map (d: lib.removePrefix "kakounePlugins." d) (
+        builtins.filter isPluginDep (meta.deps or [ ])
+      );
 
       homepage =
-        meta.homepage or (
-          if meta.type == "github" then
-            "https://github.com/${meta.owner}/${meta.repo}/"
-          else if meta.type == "gitlab" then
-            "https://gitlab.com/${meta.owner}/${meta.repo}/"
-          else if meta.type == "git" then
-            meta.url
-          else
-            ""
-        );
+        if meta.fetcher == "github" then
+          "https://github.com/${meta.repo}/"
+        else if meta.fetcher == "gitlab" then
+          "https://gitlab.com/${meta.repo}/"
+        else if meta.fetcher == "codeberg" then
+          "https://codeberg.org/${meta.repo}/"
+        else if meta.fetcher == "sourcehut" then
+          let
+            parts = lib.splitString "/" meta.repo;
+          in
+          "https://git.sr.ht/~${builtins.elemAt parts 0}/${builtins.elemAt parts 1}/"
+        else if meta.fetcher == "git" then
+          meta.repo
+        else
+          "";
+      rustPlugins = [
+        "parinfer-rust"
+        "kakoune-lsp"
+        "hop-kak"
+      ];
+      isRustPlugin = builtins.elem pname rustPlugins;
     in
-    if inNixpkgs then
-      # Plugin exists in nixpkgs: override src and version only.
-      # Nixpkgs' own meta (description, license, etc.) is preserved;
-      # only homepage is updated to point to the upstream repo.
-      super.kakounePlugins.${nixpkgsName}.overrideAttrs (
+    if compiled ? ${pname} then
+      # Plugin has a complex nixpkgs build — override src + inject deps.
+      super.kakounePlugins.${pname}.overrideAttrs (
         old:
         {
           version = meta.version;
-          src = newSrc;
-          meta =
-            (old.meta or { })
-            // {
-              inherit homepage;
-            }
-            // lib.optionalAttrs (meta ? license && meta.license != "") {
-              license = meta.license;
-            };
+          name = "kakplugin-${pname}-${meta.version}";
+          inherit src;
+          propagatedBuildInputs = (old.propagatedBuildInputs or [ ]) ++ (map (d: super.${d}) toolDeps);
+          passthru = (old.passthru or { }) // {
+            pluginDeps = pluginDepNames;
+          };
         }
-        // (nixpkgsFixups.${nixpkgsName} or { })
+        // (lib.optionalAttrs isRustPlugin {
+          cargoHash = null;
+          cargoDeps = super.rustPlatform.importCargoLock {
+            lockFile = "${src}/Cargo.lock";
+            allowBuiltinFetchGit = true;
+          };
+        })
+        // compiledFixup
       )
     else
-      # New plugin: build from scratch.  Only postInstall path rewrites
-      # are supported here — runtime binary deps are the user's
-      # responsibility via their Nix environment.
-      buildKakounePluginFrom2Nix {
-        pname = name;
+      self.kakouneUtils.buildKakounePlugin {
+        inherit pname src;
         version = meta.version;
-        src = newSrc;
+        deps = meta.deps or [ ];
         meta = {
           inherit homepage;
         }
@@ -107,18 +90,10 @@ let
         // lib.optionalAttrs (meta ? license && meta.license != "") {
           license = meta.license;
         };
-        postInstall = customPostInstall;
+        postInstall = override.postInstall or "";
       };
-
-  gitPlugins = lib.mapAttrs mkPlugin manifest;
-
-  # For plugins that exist in nixpkgs under a different name, also
-  # override the nixpkgs name so users can reference either.
-  nixpkgsOverrides = lib.mapAttrs' (
-    ourName: nixpkgsName: lib.nameValuePair nixpkgsName gitPlugins.${ourName}
-  ) nameMap;
 
 in
 {
-  kakounePlugins = super.kakounePlugins // gitPlugins // nixpkgsOverrides;
+  kakounePlugins = super.kakounePlugins // (lib.mapAttrs mkPlugin manifest);
 }

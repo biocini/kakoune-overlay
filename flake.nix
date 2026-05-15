@@ -39,10 +39,63 @@
             kakoune-git
             kakoune-unwrapped
             kakoune-unwrapped-git
-            kakoune-lsp
             kak-tree-sitter
             kak-tree-sitter-unwrapped
             ;
+          inherit (overlayed.kakounePlugins)
+            kakoune-lsp
+            ;
+        }
+      );
+
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          overlayed = pkgs.extend self.overlays.default;
+        in
+        {
+          kakoune-tool-dep-smoke-test =
+            let
+              testPlugin = overlayed.kakouneUtils.buildKakounePlugin {
+                pname = "test-plugin-tool-dep";
+                version = "0.0.1";
+                src = pkgs.writeTextDir "test.kak" "# Test plugin";
+                deps = [ "hello" ];
+              };
+              wrapped = overlayed.wrapKakoune overlayed.kakoune-unwrapped {
+                plugins = [ testPlugin ];
+              };
+            in
+            pkgs.runCommand "kakoune-tool-dep-smoke-test" { } ''
+              if grep -q "${pkgs.hello.outPath}" ${wrapped}/bin/kak; then
+                echo "PASS: wrapper script includes hello"
+                touch $out
+              else
+                echo "FAIL: wrapper script does not include hello"
+                echo "Wrapper contents:"
+                cat ${wrapped}/bin/kak
+                exit 1
+              fi
+            '';
+
+          kakoune-fzf-kak-smoke-test =
+            let
+              wrapped = overlayed.wrapKakoune overlayed.kakoune-unwrapped {
+                plugins = [ overlayed.kakounePlugins.fzf-kak ];
+              };
+            in
+            pkgs.runCommand "kakoune-fzf-kak-smoke-test" { } ''
+              if grep -q "${pkgs.fzf.outPath}" ${wrapped}/bin/kak; then
+                echo "PASS: wrapper script includes fzf store path"
+                touch $out
+              else
+                echo "FAIL: wrapper script does not include fzf store path"
+                echo "Wrapper contents:"
+                cat ${wrapped}/bin/kak
+                exit 1
+              fi
+            '';
         }
       );
     };
