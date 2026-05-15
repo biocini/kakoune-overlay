@@ -63,11 +63,4 @@ let
 in
 {
   wrapKakoune = kakoune-unwrapped: args: wrapKakouneFn self.kakounePlugins kakoune-unwrapped args;
-
-  kakouneUtils = super.kakouneUtils // {
-    buildKakounePlugin = import ./build-kakoune-plugin.nix {
-      inherit (super) lib stdenv;
-      pkgs = super;
-    };
-  };
 }

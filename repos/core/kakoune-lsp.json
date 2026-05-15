@@ -1,7 +1,0 @@
-{
-  "fetcher": "github",
-  "repo": "kakoune-lsp/kakoune-lsp",
-  "rev": "b090ff683302b3b5d79008d25d5a6c72489d0f55",
-  "sha256": "0gpajvgjxapkyfa37g9dm2wbayqx8sr6p58w1ms9pwl14y66i7fn",
-  "version": "2026-05-09"
-}

@@ -43,8 +43,35 @@ No suffixes are stripped.
 
 Example: `auto-pairs.kak` → `auto-pairs-kak`; `powerline.kak` → `powerline-kak`.
 
-This aligns with nixpkgs' own naming convention for kakoune plugins and
-eliminates the need for most aliases in `overlays/plugins.nix`.
+**Nixpkgs carve-out:** For plugins that already exist in nixpkgs, the
+manifest key must match the nixpkgs attribute name (`kakounePlugins.<name>`),
+even when that differs from the normalized repository name.
+
+Example: the repo `Delapouite/kakoune-buffers` normalizes to `kakoune-buffers`,
+but nixpkgs exposes it as `kakounePlugins.kak-buffers`, so the manifest key
+must be `kak-buffers`.
+
+## Build metadata (`meta.nix`)
+
+Plugin build metadata lives in `repos/plugins/meta.nix`. The manifest
+(`manifest.json`) is purely source metadata (what to fetch); `meta.nix` is
+purely build metadata (what to do with it).
+
+Entries are only needed when a plugin requires non-default behavior:
+
+- **`delegated = true;`** — the plugin exists in nixpkgs with a custom
+  derivation. The overlay uses `overrideAttrs` to update src/version and
+  inject deps, preserving nixpkgs' build logic.
+- **`isRust = true;`** — for delegated Rust plugins: injects `cargoDeps`
+  handling.
+- **`toolDeps = [ "fzf" ];`** — runtime tool dependencies added to
+  `propagatedBuildInputs`.
+- **`pluginDeps = [ "prelude-kak" ];`** — other kakoune plugin dependencies
+  (by manifest key), resolved at wrap time.
+- Any other attributes are passed through to `overrideAttrs` (delegated) or
+  `buildKakounePlugin` / `mkDerivation` (non-delegated).
+
+Plugins that need nothing extra are not listed in `meta.nix`.
 
 ## Verification
 

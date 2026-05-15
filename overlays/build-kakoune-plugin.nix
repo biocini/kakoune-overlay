@@ -4,37 +4,19 @@
   pkgs,
 }:
 
-{
+args@{
   pname,
   version,
   src,
-  deps ? [ ],
+  toolDeps ? [ ],
+  pluginDeps ? [ ],
   meta ? { },
-  postInstall ? "",
+  ...
 }:
 
-let
-  isPluginDep = d: lib.hasPrefix "kakounePlugins." d;
-
-  resolveToolDep =
-    d:
-    if pkgs ? ${d} then
-      pkgs.${d}
-    else
-      throw "buildKakounePlugin: unknown tool dependency '${d}' for plugin '${pname}'";
-
-  toolDeps = map resolveToolDep (builtins.filter (d: !isPluginDep d) deps);
-
-  pluginDepNames = map (d: lib.removePrefix "kakounePlugins." d) (builtins.filter isPluginDep deps);
-in
-stdenv.mkDerivation {
+stdenv.mkDerivation ({
   name = "kakplugin-${pname}-${version}";
-  inherit
-    pname
-    version
-    src
-    meta
-    ;
+  inherit pname version src meta;
 
   dontBuild = true;
   dontConfigure = true;
@@ -45,7 +27,7 @@ stdenv.mkDerivation {
   # Plugin deps: stored as names, resolved at wrapKakoune time against
   # the full kakounePlugins set to avoid evaluation-order issues.
   passthru = {
-    pluginDeps = pluginDepNames;
+    pluginDeps = pluginDeps;
   };
 
   installPhase = ''
@@ -57,6 +39,4 @@ stdenv.mkDerivation {
 
     runHook postInstall
   '';
-
-  inherit postInstall;
-}
+} // builtins.removeAttrs args [ "pname" "version" "src" "toolDeps" "pluginDeps" "meta" ])

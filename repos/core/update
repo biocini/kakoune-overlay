@@ -84,5 +84,4 @@ update_git() {
 
 update_github "mawww" "kakoune" "kakoune.json"
 update_github_tag "mawww" "kakoune" "kakoune-stable.json"
-update_github "kakoune-lsp" "kakoune-lsp" "kakoune-lsp.json"
 update_git "https://git.sr.ht/~hadronized/kak-tree-sitter" "kak-tree-sitter.json"

@@ -14,84 +14,88 @@ let
   };
 
   manifest = lib.importJSON ../repos/plugins/manifest.json;
-  overrides = import ../repos/plugins/overrides.nix { pkgs = super; };
-  compiled = import ../repos/plugins/compiled.nix { pkgs = super; };
+  pluginMeta = import ../repos/plugins/meta.nix { pkgs = super; };
 
-  isPluginDep = d: lib.hasPrefix "kakounePlugins." d;
+  resolveToolDep = pname: d:
+    if super ? ${d} then
+      super.${d}
+    else
+      throw "kakoune plugin '${pname}': unknown tool dependency '${d}'";
 
-  mkPlugin =
-    pname: meta:
+  knownMetaKeys = [ "delegated" "isRust" "toolDeps" "pluginDeps" ];
+
+  mkPlugin = pname: srcMeta:
     let
-      src = fetch.fetchFromManifest pname meta;
-      override = overrides.${pname} or { };
-      compiledFixup = compiled.${pname} or { };
+      src = fetch.fetchFromManifest pname srcMeta;
+      buildMeta = pluginMeta.${pname} or { };
 
-      toolDeps = builtins.filter (d: !isPluginDep d) (meta.deps or [ ]);
-      pluginDepNames = map (d: lib.removePrefix "kakounePlugins." d) (
-        builtins.filter isPluginDep (meta.deps or [ ])
-      );
+      delegated = buildMeta.delegated or false;
+      isRust = buildMeta.isRust or false;
+      toolDepNames = buildMeta.toolDeps or [ ];
+      pluginDepNames = buildMeta.pluginDeps or [ ];
+      toolDeps = map (resolveToolDep pname) toolDepNames;
+
+      extraMeta = lib.filterAttrs (n: v: !builtins.elem n knownMetaKeys) buildMeta;
 
       homepage =
-        if meta.fetcher == "github" then
-          "https://github.com/${meta.repo}/"
-        else if meta.fetcher == "gitlab" then
-          "https://gitlab.com/${meta.repo}/"
-        else if meta.fetcher == "codeberg" then
-          "https://codeberg.org/${meta.repo}/"
-        else if meta.fetcher == "sourcehut" then
+        if srcMeta.fetcher == "github" then
+          "https://github.com/${srcMeta.repo}/"
+        else if srcMeta.fetcher == "gitlab" then
+          "https://gitlab.com/${srcMeta.repo}/"
+        else if srcMeta.fetcher == "codeberg" then
+          "https://codeberg.org/${srcMeta.repo}/"
+        else if srcMeta.fetcher == "sourcehut" then
           let
-            parts = lib.splitString "/" meta.repo;
+            parts = lib.splitString "/" srcMeta.repo;
           in
           "https://git.sr.ht/~${builtins.elemAt parts 0}/${builtins.elemAt parts 1}/"
-        else if meta.fetcher == "git" then
-          meta.repo
+        else if srcMeta.fetcher == "git" then
+          srcMeta.repo
         else
           "";
-      rustPlugins = [
-        "parinfer-rust"
-        "kakoune-lsp"
-        "hop-kak"
-      ];
-      isRustPlugin = builtins.elem pname rustPlugins;
     in
-    if compiled ? ${pname} then
+    if delegated then
       # Plugin has a complex nixpkgs build — override src + inject deps.
       super.kakounePlugins.${pname}.overrideAttrs (
         old:
         {
-          version = meta.version;
-          name = "kakplugin-${pname}-${meta.version}";
+          version = srcMeta.version;
+          name = "kakplugin-${pname}-${srcMeta.version}";
           inherit src;
-          propagatedBuildInputs = (old.propagatedBuildInputs or [ ]) ++ (map (d: super.${d}) toolDeps);
+          propagatedBuildInputs = (old.propagatedBuildInputs or [ ]) ++ toolDeps;
           passthru = (old.passthru or { }) // {
             pluginDeps = pluginDepNames;
           };
         }
-        // (lib.optionalAttrs isRustPlugin {
+        // (lib.optionalAttrs isRust {
           cargoHash = null;
           cargoDeps = super.rustPlatform.importCargoLock {
             lockFile = "${src}/Cargo.lock";
             allowBuiltinFetchGit = true;
           };
         })
-        // compiledFixup
+        // extraMeta
       )
     else
-      self.kakouneUtils.buildKakounePlugin {
+      buildKakounePlugin ({
         inherit pname src;
-        version = meta.version;
-        deps = meta.deps or [ ];
+        version = srcMeta.version;
+        inherit toolDeps pluginDepNames;
         meta = {
           inherit homepage;
         }
-        // lib.optionalAttrs (meta ? description && meta.description != "") {
-          description = meta.description;
+        // lib.optionalAttrs (srcMeta ? description && srcMeta.description != "") {
+          description = srcMeta.description;
         }
-        // lib.optionalAttrs (meta ? license && meta.license != "") {
-          license = meta.license;
+        // lib.optionalAttrs (srcMeta ? license && srcMeta.license != "") {
+          license = srcMeta.license;
         };
-        postInstall = override.postInstall or "";
-      };
+      } // extraMeta);
+
+  buildKakounePlugin = import ./build-kakoune-plugin.nix {
+    inherit (super) lib stdenv;
+    pkgs = super;
+  };
 
 in
 {

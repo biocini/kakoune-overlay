@@ -57,11 +57,15 @@
         {
           kakoune-tool-dep-smoke-test =
             let
-              testPlugin = overlayed.kakouneUtils.buildKakounePlugin {
+              buildKakounePlugin = import ./overlays/build-kakoune-plugin.nix {
+                inherit (pkgs) lib stdenv;
+                pkgs = pkgs;
+              };
+              testPlugin = buildKakounePlugin {
                 pname = "test-plugin-tool-dep";
                 version = "0.0.1";
                 src = pkgs.writeTextDir "test.kak" "# Test plugin";
-                deps = [ "hello" ];
+                toolDeps = [ pkgs.hello ];
               };
               wrapped = overlayed.wrapKakoune overlayed.kakoune-unwrapped {
                 plugins = [ testPlugin ];

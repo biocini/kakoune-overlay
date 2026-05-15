@@ -33,9 +33,6 @@
   },
   "connect-kak": {
     "branch": "master",
-    "deps": [
-      "kakounePlugins.prelude-kak"
-    ],
     "fetcher": "github",
     "repo": "kakounedotcom/connect.kak",
     "rev": "a536605a208149eed58986bda54f3dda215dfe61",
@@ -44,9 +41,6 @@
   },
   "fzf-kak": {
     "branch": "master",
-    "deps": [
-      "fzf"
-    ],
     "fetcher": "github",
     "repo": "andreyorst/fzf.kak",
     "rev": "b2a8841716121f187b142585491658d554c1112e",
@@ -72,9 +66,6 @@
   },
   "kak-plumb": {
     "branch": "develop",
-    "deps": [
-      "plan9port"
-    ],
     "fetcher": "github",
     "repo": "eraserhd/kak-plumb",
     "rev": "2c91b7094f388613160b2d9587203eb49f7da78a",
@@ -97,7 +88,7 @@
     "sha256": "0lnvcb4khw1ywxd369phd2xibsh5f6qc11x5vrla331wr1q7y8j8",
     "version": "2022-09-18"
   },
-  "kakoune-buffers": {
+  "kak-buffers": {
     "branch": "master",
     "fetcher": "github",
     "repo": "Delapouite/kakoune-buffers",
@@ -139,10 +130,6 @@
   },
   "kakoune-rainbow": {
     "branch": "master",
-    "deps": [
-      "guile",
-      "kakounePlugins.connect-kak"
-    ],
     "fetcher": "github",
     "repo": "listentolist/kakoune-rainbow",
     "rev": "d09103e8d268cf4621215bf162a0244c9482be3c",
@@ -183,9 +170,6 @@
   },
   "pandoc-kak": {
     "branch": "master",
-    "deps": [
-      "pandoc"
-    ],
     "fetcher": "github",
     "repo": "basbebe/pandoc.kak",
     "rev": "e9597e8df58427884161ce27392a9558930832a7",
@@ -202,9 +186,6 @@
   },
   "powerline-kak": {
     "branch": "master",
-    "deps": [
-      "git"
-    ],
     "fetcher": "github",
     "repo": "andreyorst/powerline.kak",
     "rev": "299be5ef1b977a3e37238271dd35c6a3d9cd2e3d",
