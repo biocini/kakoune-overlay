@@ -88,7 +88,8 @@ let
         {
           inherit pname src;
           version = srcMeta.version;
-          inherit toolDeps pluginDepNames;
+          inherit toolDeps;
+          pluginDeps = pluginDepNames;
           meta = {
             inherit homepage;
           }

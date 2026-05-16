@@ -83,6 +83,24 @@
               fi
             '';
 
+          kakoune-plugin-dep-smoke-test =
+            let
+              wrapped = overlayed.wrapKakoune overlayed.kakoune-unwrapped {
+                plugins = [ overlayed.kakounePlugins.connect-kak ];
+              };
+            in
+            pkgs.runCommand "kakoune-plugin-dep-smoke-test" { } ''
+              if [ -d "${wrapped}/share/kak/autoload/plugins/prelude-kak" ]; then
+                echo "PASS: wrapper includes transitive plugin dep prelude-kak"
+                touch $out
+              else
+                echo "FAIL: wrapper missing transitive plugin dep prelude-kak"
+                echo "Plugin paths in wrapper:"
+                ls -la ${wrapped}/share/kak/autoload/plugins/ || true
+                exit 1
+              fi
+            '';
+
           kakoune-fzf-kak-smoke-test =
             let
               wrapped = overlayed.wrapKakoune overlayed.kakoune-unwrapped {
