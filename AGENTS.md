@@ -2,15 +2,41 @@
 
 ## Commit format
 
-Use Conventional Commits with a two-paragraph body:
+Use Conventional Commits with a structured body and mandatory agent attribution footer.
+
+### Subject line
+
+- **type** REQUIRED — `feat`, `fix`, `docs`, `refactor`, `chore`, `test`, `perf`
+- **scope** OPTIONAL — short noun for the affected area (e.g. `plugins`, `deps`)
+- **summary** REQUIRED — imperative mood, `<= 72` characters, no trailing period
+
+### Body
+
+- **Optional** for trivial or self-evident changes
+- **Use the two-paragraph style** when the work is substantial enough to warrant further breakdown
+- When present, write **two paragraphs** separated by a blank line:
+  - **First paragraph:** Name the user and describe the design direction they provided. Attribute the intellectual direction to the user personally, not as an impersonal requirements specification.
+  - **Second paragraph:** The implementation — concrete steps taken, files modified or created, tools used, key code changes, and any trade-offs or decisions made along the way.
+
+### Footer
+
+- **Mandatory** — always include the signed footer
+- Format: `Generated-with: <agent-name> (<provider>/<model-id>) via pi`
+- Call `get_current_model` to discover the active model for the footer
+
+### Example
 
 ```
-type(scope): summary
+feat(plugins): add fzf-kak
 
-First paragraph: what changed and why — the user's direction.
-Second paragraph: how it was realized — implementation choices.
+The user requested adding the fzf-kak plugin to the overlay to provide fuzzy
+file finding integration inside Kakoune.
 
-Generated-with: <agent name> (<provider>/<model-id>) via pi
+Fetched source metadata via nix-prefetch-git, audited %sh{} blocks for
+tool deps (fzf), ran the security vetting skill (PASS), and added the
+manifest entry with no meta.nix changes required.
+
+Generated-with: Nina (anthropic/claude-sonnet-4) via pi
 ```
 
 Draft multi-line messages with the `write` tool to a temp file, then `git commit -F /tmp/msg.txt`. Never use `echo` or heredocs.

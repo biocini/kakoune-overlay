@@ -106,10 +106,10 @@ grep -E 'eval\s+["'"'"']?[A-Za-z0-9+/=]{30,}' *.kak
 grep -E 'sh\s+-c\s+["'"'"']?[A-Za-z0-9+/=]{30,}' *.kak
 ```
 
-### postInstall scripts in overrides.nix
+### postInstall and fixup scripts in meta.nix
 
-If the plugin requires a `postInstall` rewrite in `overrides.nix`, check
-that the `postInstall` block:
+If the plugin requires a `postInstall`, `preFixup`, or other build-time
+rewrite in `meta.nix`, check that the block:
 
 - Does NOT download or execute remote content (`curl`, `wget`, `fetchurl`)
 - Does NOT write to locations outside `$out`
@@ -126,8 +126,10 @@ The following patterns are expected and benign. Do not flag them.
 
 - `%sh{}` blocks calling local tools by bare name without hardcoded remote
   destinations: `git`, `perl`, `python3`, `lua`, `ruby`, `node`, `ctags`,
-  `fzf`, `ripgrep`, `fd`, `clangd`, `rust-analyzer`, etc. These are
-  runtime dependencies; the user is responsible for having them in `PATH`.
+  `fzf`, `ripgrep`, `fd`, `clangd`, `rust-analyzer`, etc. These are not
+  a security concern, but they are tracked as build metadata (`toolDeps`)
+  in `meta.nix` by the add-plugin skill so the wrapper can bake them into
+  `PATH`.
 
 - The plugin calling `kak -p $kak_session` to send commands back to
   kakoune. This is the standard IPC pattern.
