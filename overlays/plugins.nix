@@ -16,15 +16,22 @@ let
   manifest = lib.importJSON ../repos/plugins/manifest.json;
   pluginMeta = import ../repos/plugins/meta.nix { pkgs = super; };
 
-  resolveToolDep = pname: d:
+  resolveToolDep =
+    pname: d:
     if super ? ${d} then
       super.${d}
     else
       throw "kakoune plugin '${pname}': unknown tool dependency '${d}'";
 
-  knownMetaKeys = [ "delegated" "isRust" "toolDeps" "pluginDeps" ];
+  knownMetaKeys = [
+    "delegated"
+    "isRust"
+    "toolDeps"
+    "pluginDeps"
+  ];
 
-  mkPlugin = pname: srcMeta:
+  mkPlugin =
+    pname: srcMeta:
     let
       src = fetch.fetchFromManifest pname srcMeta;
       buildMeta = pluginMeta.${pname} or { };
@@ -77,23 +84,26 @@ let
         // extraMeta
       )
     else
-      buildKakounePlugin ({
-        inherit pname src;
-        version = srcMeta.version;
-        inherit toolDeps pluginDepNames;
-        meta = {
-          inherit homepage;
+      buildKakounePlugin (
+        {
+          inherit pname src;
+          version = srcMeta.version;
+          inherit toolDeps pluginDepNames;
+          meta = {
+            inherit homepage;
+          }
+          // lib.optionalAttrs (srcMeta ? description && srcMeta.description != "") {
+            description = srcMeta.description;
+          }
+          // lib.optionalAttrs (srcMeta ? license && srcMeta.license != "") {
+            license = srcMeta.license;
+          };
         }
-        // lib.optionalAttrs (srcMeta ? description && srcMeta.description != "") {
-          description = srcMeta.description;
-        }
-        // lib.optionalAttrs (srcMeta ? license && srcMeta.license != "") {
-          license = srcMeta.license;
-        };
-      } // extraMeta);
+        // extraMeta
+      );
 
   buildKakounePlugin = import ./build-kakoune-plugin.nix {
-    inherit (super) lib stdenv;
+    inherit (super) lib stdenvNoCC;
     pkgs = super;
   };
 

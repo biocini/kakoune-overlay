@@ -20,19 +20,43 @@
 { pkgs }:
 {
   # Rust binaries — delegate to nixpkgs, inject cargo handling
-  parinfer-rust = { delegated = true; isRust = true; };
-  kakoune-lsp  = { delegated = true; isRust = true; };
-  hop-kak      = { delegated = true; isRust = true; };
+  parinfer-rust = {
+    delegated = true;
+    isRust = true;
+  };
+  kakoune-lsp = {
+    delegated = true;
+    isRust = true;
+  };
+  hop-kak = {
+    delegated = true;
+    isRust = true;
+  };
 
   # Compiled binaries — delegate to nixpkgs
-  kak-ansi = { delegated = true; };
-  rep      = { delegated = true; };
+  kak-ansi = {
+    delegated = true;
+  };
+  rep = {
+    delegated = true;
+  };
 
   # Delegated with path substitutions from nixpkgs
-  fzf-kak       = { delegated = true; toolDeps = [ "fzf" ]; };
-  powerline-kak = { delegated = true; toolDeps = [ "git" ]; };
-  quickscope-kak = { delegated = true; };
-  kak-plumb     = { delegated = true; toolDeps = [ "plan9port" ]; };
+  fzf-kak = {
+    delegated = true;
+    toolDeps = [ "fzf" ];
+  };
+  powerline-kak = {
+    delegated = true;
+    toolDeps = [ "git" ];
+  };
+  quickscope-kak = {
+    delegated = true;
+  };
+  kak-plumb = {
+    delegated = true;
+    toolDeps = [ "plan9port" ];
+  };
 
   # Delegated with fixup
   kakoune-rainbow = {
@@ -50,8 +74,13 @@
   };
 
   # Pure .kak plugins with deps
-  connect-kak = { toolDeps = [ "socat" ]; pluginDeps = [ "prelude-kak" ]; };
-  pandoc-kak  = { toolDeps = [ "pandoc" ]; };
+  connect-kak = {
+    toolDeps = [ "socat" ];
+    pluginDeps = [ "prelude-kak" ];
+  };
+  pandoc-kak = {
+    toolDeps = [ "pandoc" ];
+  };
 
   # Non-nixpkgs plugin with path rewrite (was in overrides.nix)
   lean4-kak = {

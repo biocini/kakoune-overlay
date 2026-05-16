@@ -58,7 +58,7 @@
           kakoune-tool-dep-smoke-test =
             let
               buildKakounePlugin = import ./overlays/build-kakoune-plugin.nix {
-                inherit (pkgs) lib stdenv;
+                inherit (pkgs) lib stdenvNoCC;
                 pkgs = pkgs;
               };
               testPlugin = buildKakounePlugin {

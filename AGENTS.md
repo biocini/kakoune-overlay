@@ -51,6 +51,26 @@ Example: the repo `Delapouite/kakoune-buffers` normalizes to `kakoune-buffers`,
 but nixpkgs exposes it as `kakounePlugins.kak-buffers`, so the manifest key
 must be `kak-buffers`.
 
+## Manifest schema (`manifest.json`)
+
+The manifest contains one entry per plugin. All fields are required unless
+marked optional.
+
+| Field | Required | Description |
+|---|---|---|
+| `fetcher` | yes | One of `github`, `gitlab`, `codeberg`, `sourcehut`, `git` |
+| `repo` | yes | Repository path in fetcher-native format (e.g. `owner/repo`) |
+| `branch` | yes | Default branch name |
+| `rev` | yes | Full git revision to fetch |
+| `sha256` | yes | base32 hash of the fetched archive |
+| `version` | yes | ISO date of the revision (`YYYY-MM-DD`) |
+| `description` | no | Short description (used for `meta.description`) |
+| `license` | no | SPDX identifier (used for `meta.license`) |
+| `leaveDotGit` | no | For `sourcehut` and `git` fetchers only. Retains `.git` directory in the fetched source. Required by some build systems that read git metadata at build time. Default `false`. |
+
+Update and discovery scripts must preserve `leaveDotGit` when refreshing an
+existing entry.
+
 ## Build metadata (`meta.nix`)
 
 Plugin build metadata lives in `repos/plugins/meta.nix`. The manifest
