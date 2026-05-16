@@ -55,7 +55,28 @@ let
       }
     else
       throw "Unknown fetcher '${fetcher}' for ${pname}";
+
+  homepageFromManifest =
+    meta:
+    let
+      fetcher = meta.fetcher or "";
+    in
+    if fetcher == "github" then
+      "https://github.com/${meta.repo}/"
+    else if fetcher == "gitlab" then
+      "https://gitlab.com/${meta.repo}/"
+    else if fetcher == "codeberg" then
+      "https://codeberg.org/${meta.repo}/"
+    else if fetcher == "sourcehut" then
+      let
+        parts = lib.splitString "/" meta.repo;
+      in
+      "https://git.sr.ht/~${builtins.elemAt parts 0}/${builtins.elemAt parts 1}/"
+    else if fetcher == "git" then
+      meta.repo
+    else
+      "";
 in
 {
-  inherit fetchFromManifest;
+  inherit fetchFromManifest homepageFromManifest;
 }

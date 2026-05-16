@@ -44,22 +44,7 @@ let
 
       extraMeta = lib.filterAttrs (n: v: !builtins.elem n knownMetaKeys) buildMeta;
 
-      homepage =
-        if srcMeta.fetcher == "github" then
-          "https://github.com/${srcMeta.repo}/"
-        else if srcMeta.fetcher == "gitlab" then
-          "https://gitlab.com/${srcMeta.repo}/"
-        else if srcMeta.fetcher == "codeberg" then
-          "https://codeberg.org/${srcMeta.repo}/"
-        else if srcMeta.fetcher == "sourcehut" then
-          let
-            parts = lib.splitString "/" srcMeta.repo;
-          in
-          "https://git.sr.ht/~${builtins.elemAt parts 0}/${builtins.elemAt parts 1}/"
-        else if srcMeta.fetcher == "git" then
-          srcMeta.repo
-        else
-          "";
+      homepage = fetch.homepageFromManifest srcMeta;
     in
     if delegated then
       # Plugin has a complex nixpkgs build — override src + inject deps.
