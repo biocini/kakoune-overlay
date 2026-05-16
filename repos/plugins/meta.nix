@@ -19,7 +19,7 @@
 
 { pkgs }:
 {
-  # Rust binaries — delegate to nixpkgs, inject cargo handling
+  # Rust binaries — delegated to nixpkgs, inject cargo handling
   parinfer-rust = {
     delegated = true;
     isRust = true;
@@ -31,6 +31,18 @@
   hop-kak = {
     delegated = true;
     isRust = true;
+  };
+
+  # Rust binaries — non-delegated, built by overlay
+  kak-dap = {
+    isRust = true;
+  };
+  kakpipe = {
+    isRust = true;
+  };
+  popup-kak = {
+    isRust = true;
+    toolDeps = [ "tmux" ];
   };
 
   # Compiled binaries — delegate to nixpkgs
@@ -78,8 +90,14 @@
     toolDeps = [ "socat" ];
     pluginDeps = [ "prelude-kak" ];
   };
+  kakoune-comefrom = {
+    toolDeps = [ "attr" ];
+  };
   pandoc-kak = {
     toolDeps = [ "pandoc" ];
+  };
+  wiki-kak = {
+    toolDeps = [ "xdg-utils" ];
   };
 
   # Non-nixpkgs plugin with path rewrite (was in overrides.nix)

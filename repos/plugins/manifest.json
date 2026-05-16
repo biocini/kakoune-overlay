@@ -1,4 +1,12 @@
 {
+  "abbreviations-kak": {
+    "branch": "main",
+    "fetcher": "github",
+    "repo": "enricozb/abbreviations.kak",
+    "rev": "37b052e0a481fb3ba325227de0161c1f2d52831f",
+    "sha256": "0hjvkvph52d2f8hq5hfixnyvw0pfvryxzkwx3ylr5rc2z60h6ncj",
+    "version": "2025-09-01"
+  },
   "active-window-kak": {
     "branch": "master",
     "fetcher": "github",
@@ -6,6 +14,14 @@
     "rev": "36bf0364eed856a52cddf274072e9f255902c0ee",
     "sha256": "1fv1cp9q212gamf9z2papl5xcl2w31fpcmbgdzbxcxdl1pvfsqp8",
     "version": "2022-11-14"
+  },
+  "agda-kak": {
+    "branch": "main",
+    "fetcher": "github",
+    "repo": "enricozb/agda.kak",
+    "rev": "05c3a8dfe21cad82c1392f027a2403549ba35d38",
+    "sha256": "1vcwynli7myy6miiy6vsyqj6w35zcgix9v98wh3cakc13hzdrjbm",
+    "version": "2024-09-29"
   },
   "auto-pairs-kak": {
     "branch": "master",
@@ -47,6 +63,15 @@
     "sha256": "03n74s9mfrl17cdy5h131bxa3n29n9dfrg6qwp2d17qc3b7ixv82",
     "version": "2026-05-06"
   },
+  "god-mode-kak": {
+    "branch": "master",
+    "description": "God-mode implementation for alt-key haters",
+    "fetcher": "github",
+    "repo": "selectgender/god-mode.kak",
+    "rev": "b8ee9b4c32874b126b5dc8a3c7e7874b9d162a60",
+    "sha256": "140mbcz580vdwvzhhankgg13cc6a7zkksfmwc8ri1dmzrdvw7cqw",
+    "version": "2025-01-16"
+  },
   "hop-kak": {
     "branch": "master",
     "fetcher": "sourcehut",
@@ -71,6 +96,16 @@
     "rev": "2630f05b288eb1a1bcedfb3db071ab9dc68074fa",
     "sha256": "1h46j858dcd5d2mamwzy5qm93mnx5x2m2hwhjim2d7asxmzhsys1",
     "version": "2026-04-11"
+  },
+  "kak-dap": {
+    "branch": "master",
+    "description": "A debug adapter protocol client for Kakoune.",
+    "fetcher": "codeberg",
+    "license": "0BSD",
+    "repo": "jdugan6240/kak-dap",
+    "rev": "f2eaed45f6170e042b78e53a0049a3bb7944635b",
+    "sha256": "0bpmmj786x24bhbw9mwn3gfihfshzq4yxi1db246ig1rri5nqy7m",
+    "version": "2025-08-16"
   },
   "kak-plumb": {
     "branch": "develop",
@@ -104,6 +139,16 @@
     "sha256": "12nc165qy4kkdaww34kxbnvcqja3nx7l1vjd3lrhlw3fp4p7j94v",
     "version": "2025-07-31"
   },
+  "kakoune-comefrom": {
+    "branch": "main",
+    "description": "COMEFROM links in Kakoune - Link notes and reference anywhere!",
+    "fetcher": "sourcehut",
+    "license": "BSD-2-Clause",
+    "repo": "marcc/kakoune-comefrom",
+    "rev": "5fe9792ea21cf1f58072e4f388c3e5f1588706e2",
+    "sha256": "0ic3mw0kr5j11fb1j2dka9lrmxzdr548mlln95mc5qvvjr9jahdv",
+    "version": "2025-04-21"
+  },
   "kakoune-easymotion": {
     "branch": "master",
     "fetcher": "github",
@@ -119,6 +164,16 @@
     "rev": "8ffeec08068edfee42e076c5f6d56a54a498bad2",
     "sha256": "1v87aqfk2jcysbdls3mh2v1yafk1albbinfxsxp11m4nxd2b9agl",
     "version": "2021-05-16"
+  },
+  "kakoune-find": {
+    "branch": "master",
+    "description": "Find and replace on open buffers",
+    "fetcher": "github",
+    "license": "Unlicense",
+    "repo": "occivink/kakoune-find",
+    "rev": "09afcc8520d4c92928fe69da4c370b9979aa90d3",
+    "sha256": "1x4ijcybb14lgd1l51xycfysadbaz4kbgq9szv850k0fnh0v8883",
+    "version": "2022-09-25"
   },
   "kakoune-lsp": {
     "branch": "master",
@@ -152,6 +207,16 @@
     "sha256": "11g2b8aac032q1mns99vrx0rl9rwlinfkim6rkc910y3sk8yfj8j",
     "version": "2021-06-20"
   },
+  "kakoune-surround": {
+    "branch": "master",
+    "description": "Surround selection, Change/Delete surrounder",
+    "fetcher": "github",
+    "license": "Unlicense",
+    "repo": "h-youhei/kakoune-surround",
+    "rev": "efe74c6f434d1e30eff70d4b0d737f55bf6c5022",
+    "sha256": "09fd7qhlsazf4bcl3z7xh9z0fklw69c5j32hminphihq74qrry6h",
+    "version": "2018-09-17"
+  },
   "kakoune-themes": {
     "branch": "master",
     "description": "Beautiful Color schemes for kakoune",
@@ -168,6 +233,16 @@
     "rev": "dbb39712e3824ca6142b510f26f35a769934a1e1",
     "sha256": "1wncx16a8mi2b81cvkiji3ccv8is5g3sa4hwf1669va5a432vdwn",
     "version": "2023-04-20"
+  },
+  "kakpipe": {
+    "branch": "main",
+    "description": "Launch external tools inside colorful fifo buffers and display text with ansi colors in info boxes",
+    "fetcher": "github",
+    "license": "Apache-2.0",
+    "repo": "eburghar/kakpipe",
+    "rev": "7f29ee36b26cf1a6aab2ceb74a9d46f71de11f27",
+    "sha256": "15fhlhk83q51k8v06g2yzcxmlbkhj68plnndj9agsp9f8vwy1yaa",
+    "version": "2022-11-04"
   },
   "openscad-kak": {
     "branch": "master",
@@ -192,6 +267,16 @@
     "rev": "845bfbb9916687cba5b6bae088c9eab70dbb83a3",
     "sha256": "07pnh7fqmvrn1vaqwcwav02688vmnv9i911f6irg2za67inmw72s",
     "version": "2026-01-03"
+  },
+  "popup-kak": {
+    "branch": "main",
+    "description": "Kakoune popup plugin",
+    "fetcher": "github",
+    "license": "CC0-1.0",
+    "repo": "enricozb/popup.kak",
+    "rev": "54a92fcbfff5a9647b7de8b7a8167373aded7fce",
+    "sha256": "143kps081ac5dvgn92lhbq3k85slf0s2vwsjaqq9p97lvvy6wags",
+    "version": "2026-04-30"
   },
   "powerline-kak": {
     "branch": "master",
@@ -242,6 +327,23 @@
     "rev": "88ad99561f48efaed36713f59c7f217f50be719b",
     "sha256": "10r8my83x1h3l7abg7l3dnyl7yhpkx7g9gyqklvxcr6rpjpwfj7i",
     "version": "2024-09-29"
+  },
+  "typst-kak": {
+    "branch": "main",
+    "fetcher": "github",
+    "repo": "enricozb/typst.kak",
+    "rev": "01e4a09ef124aec11157712b26a872d7a8bdb71a",
+    "sha256": "1g8avqc8wjkpdn6nmhg4aq2ljwn3mjdhsn5da36w0ybkwyb79g0x",
+    "version": "2025-11-17"
+  },
+  "wiki-kak": {
+    "branch": "master",
+    "description": "Kakoune markdown file navigation and wiki system",
+    "fetcher": "github",
+    "repo": "enricozb/wiki.kak",
+    "rev": "65d10d1bf25c87af8d588c7b85ef7ab9eee39bff",
+    "sha256": "09z4b2kxc196s9aifx1i1n8rr3j9zpw636265zsa3pqa8gc9a4kz",
+    "version": "2024-10-07"
   },
   "zig-kak": {
     "branch": "master",

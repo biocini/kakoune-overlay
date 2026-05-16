@@ -11,10 +11,23 @@ args@{
   toolDeps ? [ ],
   pluginDeps ? [ ],
   meta ? { },
+  isRust ? false,
   ...
 }:
 
-stdenvNoCC.mkDerivation (
+let
+  stdenv = if isRust then pkgs.stdenv else stdenvNoCC;
+  cargoDeps =
+    if isRust then
+      pkgs.rustPlatform.importCargoLock {
+        lockFile = "${src}/Cargo.lock";
+        allowBuiltinFetchGit = true;
+      }
+    else
+      null;
+in
+
+stdenv.mkDerivation (
   {
     name = "kakplugin-${pname}-${version}";
     inherit
@@ -24,8 +37,14 @@ stdenvNoCC.mkDerivation (
       meta
       ;
 
-    dontBuild = true;
-    dontConfigure = true;
+    dontBuild = !isRust;
+    dontConfigure = !isRust;
+
+    nativeBuildInputs = lib.optionals isRust [
+      pkgs.rustPlatform.cargoSetupHook
+      pkgs.cargo
+      pkgs.rustc
+    ];
 
     # Tool deps: inspectable by wrapKakoune for PATH injection.
     propagatedBuildInputs = toolDeps;
@@ -35,6 +54,12 @@ stdenvNoCC.mkDerivation (
     passthru = {
       pluginDeps = pluginDeps;
     };
+
+    buildPhase = lib.optionalString isRust ''
+      runHook preBuild
+      cargo build --release
+      runHook postBuild
+    '';
 
     # Copies the full source tree, not just .kak files. Some plugins include
     # support scripts (shell, python, lua) referenced by their .kak files.
@@ -46,9 +71,19 @@ stdenvNoCC.mkDerivation (
       mkdir -p $out/share/kak/autoload/plugins
       cp -r . $target
 
+      ${lib.optionalString isRust ''
+        mkdir -p $out/bin
+        find target/release -maxdepth 1 -type f \
+          -not -name '*.d' \
+          -not -name '.cargo-lock' \
+          -not -name '.fingerprint' \
+          -exec cp {} $out/bin/ \;
+      ''}
+
       runHook postInstall
     '';
   }
+  // lib.optionalAttrs isRust { inherit cargoDeps; }
   // builtins.removeAttrs args [
     "pname"
     "version"
@@ -56,5 +91,6 @@ stdenvNoCC.mkDerivation (
     "toolDeps"
     "pluginDeps"
     "meta"
+    "isRust"
   ]
 )
