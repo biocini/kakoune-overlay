@@ -11,7 +11,7 @@ manifest="manifest.json"
 
 # Build set of known repos (owner/repo)
 known_file="$TMPDIR/known-repos.txt"
-jq -r '.[] | "\(.owner)/\(.repo)"' "$manifest" 2>/dev/null | sort -u > "$known_file" || true
+jq -r '.[] | .repo' "$manifest" 2>/dev/null | sort -u > "$known_file" || true
 
 # Fetch all repos from GitHub API as JSON Lines
 api_ok=false
@@ -91,16 +91,15 @@ while IFS= read -r item; do
   fi
 
   jq --arg name "$name" \
-     --arg type "github" \
-     --arg owner "$owner" \
-     --arg repo "$repo" \
+     --arg fetcher "github" \
+     --arg repo "$owner/$repo" \
      --arg rev "$commit_sha" \
      --arg sha256 "$hash" \
      --arg version "$version_date" \
      --arg branch "$branch" \
      --arg description "$description" \
      --arg license "$license" \
-     '.[$name] = {type: $type, owner: $owner, repo: $repo, rev: $rev, sha256: $sha256, version: $version, branch: $branch, description: $description, license: $license}' \
+     '.[$name] = {fetcher: $fetcher, repo: $repo, rev: $rev, sha256: $sha256, version: $version, branch: $branch, description: $description, license: $license}' \
      /tmp/new-plugins.json > /tmp/new-plugins.json.tmp
   mv /tmp/new-plugins.json.tmp /tmp/new-plugins.json
 

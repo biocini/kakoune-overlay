@@ -11,8 +11,7 @@ let
   fetchFromManifest =
     pname: meta:
     let
-      fetcher =
-        if meta ? fetcher then meta.fetcher else throw "fetchFromManifest: missing fetcher for ${pname}";
+      fetcher = meta.fetcher or (throw "fetchFromManifest: missing fetcher for ${pname}");
 
       isGit = fetcher == "git";
 

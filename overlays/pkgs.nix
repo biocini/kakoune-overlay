@@ -40,12 +40,14 @@ in
 
   kakoune-git = self.wrapKakoune self.kakoune-unwrapped-git { plugins = [ ]; };
 
-  kak-tree-sitter-unwrapped = super.kak-tree-sitter-unwrapped.overrideAttrs (old: {
-    version = kakTreeSitterMeta.version;
+  kak-tree-sitter-unwrapped = let
     src = fetch.fetchFromManifest "kak-tree-sitter" kakTreeSitterMeta;
+  in super.kak-tree-sitter-unwrapped.overrideAttrs (old: {
+    version = kakTreeSitterMeta.version;
+    inherit src;
     cargoHash = null;
     cargoDeps = super.rustPlatform.importCargoLock {
-      lockFile = "${fetch.fetchFromManifest "kak-tree-sitter" kakTreeSitterMeta}/Cargo.lock";
+      lockFile = "${src}/Cargo.lock";
       allowBuiltinFetchGit = true;
     };
   });

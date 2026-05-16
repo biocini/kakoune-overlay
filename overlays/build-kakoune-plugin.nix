@@ -92,5 +92,6 @@ stdenv.mkDerivation (
     "pluginDeps"
     "meta"
     "isRust"
+    "cargoDeps"
   ]
 )

@@ -17,20 +17,19 @@ plugins=$(jq -r 'keys[]' "$manifest")
 
 for plugin in $plugins; do
     meta=$(jq --arg p "$plugin" '.[$p]' "$manifest")
-    type=$(echo "$meta" | jq -r '.type')
+    fetcher=$(echo "$meta" | jq -r '.fetcher')
     current_rev=$(echo "$meta" | jq -r '.rev')
 
-    if [ "$type" = "github" ]; then
-        owner=$(echo "$meta" | jq -r '.owner')
+    if [ "$fetcher" = "github" ]; then
         repo=$(echo "$meta" | jq -r '.repo')
         branch=$(echo "$meta" | jq -r '.branch // "master"')
 
-        feed=$(curl -sL "https://github.com/$owner/$repo/commits/$branch.atom")
+        feed=$(curl -fsL "https://github.com/$repo/commits/$branch.atom")
         commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || true)
 
         # Fallback to main if stored branch returns empty
         if [ -z "$commit_sha" ] && [ "$branch" != "main" ]; then
-            feed=$(curl -sL "https://github.com/$owner/$repo/commits/main.atom")
+            feed=$(curl -fsL "https://github.com/$repo/commits/main.atom")
             commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || true)
             if [ -n "$commit_sha" ]; then
                 branch="main"
@@ -38,7 +37,7 @@ for plugin in $plugins; do
         fi
 
         if [ -z "$commit_sha" ]; then
-            echo "  SKIP $plugin: could not fetch feed for $owner/$repo"
+            echo "  SKIP $plugin: could not fetch feed for $repo"
             failed=$((failed + 1))
             continue
         fi
@@ -49,7 +48,7 @@ for plugin in $plugins; do
         fi
 
         version_date=$(echo "$feed" | grep -m1 '<updated>' | sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g' || true)
-        digest=$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$commit_sha.tar.gz")
+        digest=$(nix-prefetch-url --unpack "https://github.com/$repo/archive/$commit_sha.tar.gz")
 
         jq --arg p "$plugin" \
            --arg rev "$commit_sha" \
@@ -62,19 +61,18 @@ for plugin in $plugins; do
         echo "  UPDATED $plugin: $current_rev -> $commit_sha"
         updated=$((updated + 1))
 
-    elif [ "$type" = "gitlab" ]; then
-        owner=$(echo "$meta" | jq -r '.owner')
+    elif [ "$fetcher" = "gitlab" ]; then
         repo=$(echo "$meta" | jq -r '.repo')
 
-        commit_sha=$(curl -sL "https://gitlab.com/api/v4/projects/$(printf '%s' "$owner/$repo" | jq -sRr @uri)/repository/commits?per_page=1" | jq -r '.[0].id')
+        commit_sha=$(curl -fsL "https://gitlab.com/api/v4/projects/$(printf '%s' "$repo" | jq -sRr @uri)/repository/commits?per_page=1" | jq -r '.[0].id')
 
         if [ "$commit_sha" = "$current_rev" ]; then
             skipped=$((skipped + 1))
             continue
         fi
 
-        version_date=$(curl -sL "https://gitlab.com/api/v4/projects/$(printf '%s' "$owner/$repo" | jq -sRr @uri)/repository/commits/$commit_sha" | jq -r '.committed_date' | cut -dT -f1)
-        digest=$(nix-prefetch-url --unpack "https://gitlab.com/$owner/$repo/-/archive/$commit_sha/$repo-$commit_sha.tar.gz")
+        version_date=$(curl -fsL "https://gitlab.com/api/v4/projects/$(printf '%s' "$repo" | jq -sRr @uri)/repository/commits/$commit_sha" | jq -r '.committed_date' | cut -dT -f1)
+        digest=$(nix-prefetch-url --unpack "https://gitlab.com/$repo/-/archive/$commit_sha/$(basename "$repo")-$commit_sha.tar.gz")
 
         jq --arg p "$plugin" \
            --arg rev "$commit_sha" \
@@ -86,8 +84,8 @@ for plugin in $plugins; do
         echo "  UPDATED $plugin: $current_rev -> $commit_sha"
         updated=$((updated + 1))
 
-    elif [ "$type" = "git" ]; then
-        url=$(echo "$meta" | jq -r '.url')
+    elif [ "$fetcher" = "git" ]; then
+        url=$(echo "$meta" | jq -r '.repo')
 
         info=$(nix-prefetch-git --no-deepClone "$url")
         rev=$(echo "$info" | jq -r '.rev')

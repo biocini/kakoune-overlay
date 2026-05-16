@@ -10,14 +10,14 @@ update_github() {
 
     # Use GitHub Atom feed — no API auth/rate limits
     local commit_data
-    commit_data=$(curl -sL "https://github.com/$owner/$repo/commits/$branch.atom" | \
+    commit_data=$(curl -fsL "https://github.com/$owner/$repo/commits/$branch.atom" | \
         grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | \
         sed 's/.*Commit\///; s/<\/id>//; s/ //g')
 
     local commit_sha="$commit_data"
 
     local version_date
-    version_date=$(curl -sL "https://github.com/$owner/$repo/commits/$branch.atom" | \
+    version_date=$(curl -fsL "https://github.com/$owner/$repo/commits/$branch.atom" | \
         grep -m1 '<updated>' | \
         sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g')
 
@@ -25,13 +25,12 @@ update_github() {
     digest=$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$commit_sha.tar.gz")
 
     jq -n \
-        --arg type "github" \
-        --arg owner "$owner" \
-        --arg repo "$repo" \
+        --arg fetcher "github" \
+        --arg repo "${owner}/${repo}" \
         --arg rev "$commit_sha" \
         --arg sha256 "$digest" \
         --arg version "$version_date" \
-        '{type: $type, owner: $owner, repo: $repo, rev: $rev, sha256: $sha256, version: $version}' \
+        '{fetcher: $fetcher, repo: $repo, rev: $rev, sha256: $sha256, version: $version}' \
         > "$file"
 }
 
@@ -40,7 +39,7 @@ update_github_tag() {
     echo "Updating $owner/$repo (latest tag)"
 
     local tag_data
-    tag_data=$(curl -sL "https://api.github.com/repos/$owner/$repo/releases/latest" | \
+    tag_data=$(curl -fsL "https://api.github.com/repos/$owner/$repo/releases/latest" | \
         jq -r '.tag_name')
 
     local digest
@@ -50,13 +49,12 @@ update_github_tag() {
     local version="${tag_data#v}"
 
     jq -n \
-        --arg type "github" \
-        --arg owner "$owner" \
-        --arg repo "$repo" \
+        --arg fetcher "github" \
+        --arg repo "${owner}/${repo}" \
         --arg rev "$tag_data" \
         --arg sha256 "$digest" \
         --arg version "$version" \
-        '{type: $type, owner: $owner, repo: $repo, rev: $rev, sha256: $sha256, version: $version}' \
+        '{fetcher: $fetcher, repo: $repo, rev: $rev, sha256: $sha256, version: $version}' \
         > "$file"
 }
 
@@ -73,12 +71,12 @@ update_git() {
     version_date=$(echo "$info" | jq -r '.date' | cut -dT -f1)
 
     jq -n \
-        --arg type "git" \
-        --arg url "$url" \
+        --arg fetcher "git" \
+        --arg repo "$url" \
         --arg rev "$rev" \
         --arg sha256 "$sha256" \
         --arg version "$version_date" \
-        '{type: $type, url: $url, rev: $rev, sha256: $sha256, version: $version}' \
+        '{fetcher: $fetcher, repo: $repo, rev: $rev, sha256: $sha256, version: $version}' \
         > "$file"
 }
 
