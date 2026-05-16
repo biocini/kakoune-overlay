@@ -9,7 +9,7 @@
 # Known keys:
 #   delegated   bool   — use nixpkgs' derivation (overrideAttrs) instead of
 #                        buildKakounePlugin
-#   isRust      bool   — for delegated plugins: inject cargoDeps handling
+#   isRust      bool   — build the Rust binary via cargo build --release
 #   toolDeps    [str]  — runtime tool dependencies (e.g. "fzf", "git")
 #   pluginDeps  [str]  — other kakoune plugin dependencies (by pname)
 #

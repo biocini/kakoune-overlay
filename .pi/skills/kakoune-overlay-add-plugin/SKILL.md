@@ -186,9 +186,12 @@ If found, note that a `postInstall` entry in `meta.nix` may be needed.
 If `super.kakounePlugins.<pname>` exists in nixpkgs:
 
 - Set `delegated = true;` in the `meta.nix` entry.
-- Check if the repository root contains `Cargo.toml`. If so, add `isRust = true;`.
 - Note that the plugin's existing nixpkgs build logic will be preserved via
   `overrideAttrs`.
+
+Check if the repository root contains `Cargo.toml`. If so, add `isRust = true;`
+in the `meta.nix` entry. This works for both delegated and non-delegated
+plugins — the overlay will build the Rust binary via `cargo build --release`.
 
 ## Step 8: Security review (mandatory)
 
@@ -218,6 +221,17 @@ Example entries:
 fzf-kak = {
   delegated = true;
   toolDeps = [ "fzf" ];
+};
+
+# Delegated Rust plugin
+parinfer-rust = {
+  delegated = true;
+  isRust = true;
+};
+
+# Non-delegated Rust plugin
+kakpipe = {
+  isRust = true;
 };
 
 # Non-delegated plugin with deps
