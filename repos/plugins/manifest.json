@@ -64,6 +64,14 @@
     "sha256": "1zyhnbwlcfqvdsvwbkjxavahyy8k4p759jc7bbf8nz1sn88ib7x6",
     "version": "2026-01-21"
   },
+  "kak-buffers": {
+    "branch": "master",
+    "fetcher": "github",
+    "repo": "Delapouite/kakoune-buffers",
+    "rev": "2630f05b288eb1a1bcedfb3db071ab9dc68074fa",
+    "sha256": "1h46j858dcd5d2mamwzy5qm93mnx5x2m2hwhjim2d7asxmzhsys1",
+    "version": "2026-04-11"
+  },
   "kak-plumb": {
     "branch": "develop",
     "fetcher": "github",
@@ -87,14 +95,6 @@
     "rev": "21319aa08e7c9072dcf1a4f2f5583887d701fc37",
     "sha256": "0lnvcb4khw1ywxd369phd2xibsh5f6qc11x5vrla331wr1q7y8j8",
     "version": "2022-09-18"
-  },
-  "kak-buffers": {
-    "branch": "master",
-    "fetcher": "github",
-    "repo": "Delapouite/kakoune-buffers",
-    "rev": "2630f05b288eb1a1bcedfb3db071ab9dc68074fa",
-    "sha256": "1h46j858dcd5d2mamwzy5qm93mnx5x2m2hwhjim2d7asxmzhsys1",
-    "version": "2026-04-11"
   },
   "kakoune-catppuccin": {
     "branch": "main",
@@ -151,6 +151,15 @@
     "rev": "e8b6c269ac91eab45b0fe0d2b1f5dd49515ecd00",
     "sha256": "11g2b8aac032q1mns99vrx0rl9rwlinfkim6rkc910y3sk8yfj8j",
     "version": "2021-06-20"
+  },
+  "kakoune-themes": {
+    "branch": "master",
+    "description": "Beautiful Color schemes for kakoune",
+    "fetcher": "codeberg",
+    "repo": "anhsirk0/kakoune-themes",
+    "rev": "2a296b3fc4a1b4f87387202370aa61da85e2448b",
+    "sha256": "09iqql3rxciciya5m5qvd2k57fj9vlliy380fync0b2ghap9j1xa",
+    "version": "2026-02-28"
   },
   "kakoune-vertical-selection": {
     "branch": "master",
