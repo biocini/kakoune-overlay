@@ -96,7 +96,11 @@
               else
                 echo "FAIL: wrapper missing transitive plugin dep prelude-kak"
                 echo "Plugin paths in wrapper:"
-                ls -la ${wrapped}/share/kak/autoload/plugins/ || true
+                if [ -d "${wrapped}/share/kak/autoload/plugins/" ]; then
+                  ls -la "${wrapped}/share/kak/autoload/plugins/"
+                else
+                  echo "  (directory does not exist)"
+                fi
                 exit 1
               fi
             '';

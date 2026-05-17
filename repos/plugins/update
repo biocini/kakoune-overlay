@@ -25,12 +25,12 @@ for plugin in $plugins; do
         branch=$(echo "$meta" | jq -r '.branch // "master"')
 
         feed=$(curl -fsL "https://github.com/$repo/commits/$branch.atom")
-        commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || true)
+        commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || echo "")
 
         # Fallback to main if stored branch returns empty
         if [ -z "$commit_sha" ] && [ "$branch" != "main" ]; then
             feed=$(curl -fsL "https://github.com/$repo/commits/main.atom")
-            commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || true)
+            commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || echo "")
             if [ -n "$commit_sha" ]; then
                 branch="main"
             fi
@@ -47,7 +47,7 @@ for plugin in $plugins; do
             continue
         fi
 
-        version_date=$(echo "$feed" | grep -m1 '<updated>' | sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g' || true)
+        version_date=$(echo "$feed" | grep -m1 '<updated>' | sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g' || echo "")
         digest=$(nix-prefetch-url --unpack "https://github.com/$repo/archive/$commit_sha.tar.gz")
 
         jq --arg p "$plugin" \

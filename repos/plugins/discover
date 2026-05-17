@@ -11,7 +11,7 @@ manifest="manifest.json"
 
 # Build set of known repos (owner/repo)
 known_file="$TMPDIR/known-repos.txt"
-jq -r '.[] | .repo' "$manifest" 2>/dev/null | sort -u > "$known_file" || true
+jq -r '.[] | .repo' "$manifest" | sort -u > "$known_file"
 
 # Fetch all repos from GitHub API as JSON Lines
 api_ok=false
@@ -76,13 +76,13 @@ while IFS= read -r item; do
     continue
   fi
 
-  commit_sha=$(grep -m1 '<id>tag:github.com,2008:Grit::Commit/' "$feed_file" | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || true)
+  commit_sha=$(grep -m1 '<id>tag:github.com,2008:Grit::Commit/' "$feed_file" | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || echo "")
   if [ -z "$commit_sha" ] || [ "$commit_sha" = "null" ]; then
     echo "    WARN: no commit found in feed for $full_name" >&2
     continue
   fi
 
-  version_date=$(grep -m1 '<updated>' "$feed_file" | sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g' || true)
+  version_date=$(grep -m1 '<updated>' "$feed_file" | sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g' || echo "")
 
   # Prefetch hash
   if ! hash=$(nix-prefetch-url --unpack "https://github.com/$full_name/archive/$commit_sha.tar.gz" 2>/dev/null); then
