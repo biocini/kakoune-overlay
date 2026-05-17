@@ -9,17 +9,14 @@ update_github() {
     echo "Updating $owner/$repo"
 
     # Use GitHub Atom feed — no API auth/rate limits
-    local commit_data
-    commit_data=$(curl -fsL "https://github.com/$owner/$repo/commits/$branch.atom" | \
-        grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | \
-        sed 's/.*Commit\///; s/<\/id>//; s/ //g')
+    local feed
+    feed=$(curl -fsL "https://github.com/$owner/$repo/commits/$branch.atom")
 
-    local commit_sha="$commit_data"
+    local commit_sha
+    commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g')
 
     local version_date
-    version_date=$(curl -fsL "https://github.com/$owner/$repo/commits/$branch.atom" | \
-        grep -m1 '<updated>' | \
-        sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g')
+    version_date=$(echo "$feed" | grep -m1 '<updated>' | sed 's/.*<updated>//; s/<\/updated>//; s/T.*//; s/ //g')
 
     local digest
     digest=$(nix-prefetch-url --unpack "https://github.com/$owner/$repo/archive/$commit_sha.tar.gz")

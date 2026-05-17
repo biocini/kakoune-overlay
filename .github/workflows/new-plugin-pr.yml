@@ -1,5 +1,3 @@
-# New plugin discovery paused during Phase 1 manifest migration.
-# Re-enable after the update tooling is adjusted for the new schema.
 name: Propose new plugins
 
 on:
@@ -37,13 +35,18 @@ jobs:
         id: discover
         run: |
           NEW_PLUGINS=$(./repos/plugins/discover)
-          COUNT=$(echo "$NEW_PLUGINS" | grep -c '^' || true)
+          COUNT=$(echo "$NEW_PLUGINS" | grep -c '^')
           if [ -z "$NEW_PLUGINS" ] || [ "$COUNT" -eq 0 ]; then
             echo "No new plugins discovered."
             echo "count=0" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          {
+            echo "new_plugins<<EOF"
+            echo "$NEW_PLUGINS"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
           echo "New plugins discovered ($COUNT):"
           echo "$NEW_PLUGINS"
 
@@ -90,8 +93,7 @@ jobs:
              `FAIL` to `/tmp/security-verdict`. Otherwise write `PASS`.
              Continue reviewing remaining plugins even after a FAIL.
           TASK_EOF
-          gh copilot suggest --target shell --non-interactive < /tmp/task.md \
-            || true
+          gh copilot suggest --target shell --non-interactive < /tmp/task.md
           if [ ! -f /tmp/security-verdict ]; then
             echo "PASS" > /tmp/security-verdict
           fi
@@ -128,8 +130,7 @@ jobs:
              conventions (feat(plugins) scope, two-paragraph body,
              Generated-with trailer).
           TASK_EOF
-          gh copilot suggest --target shell --non-interactive < /tmp/task.md \
-            || true
+          gh copilot suggest --target shell --non-interactive < /tmp/task.md
 
       - name: Create branch and PR
         if: steps.discover.outputs.count != '0'
@@ -146,15 +147,15 @@ jobs:
           fi
 
           if [ "$HAS_FAIL" = "false" ] && [ -f /tmp/msg.txt ]; then
-            git add repos/plugins/manifest.json \
-              repos/plugins/meta.nix \
-              docs/security-audit.json || true
+            git add repos/plugins/manifest.json
+            [ -f repos/plugins/meta.nix ] && git add repos/plugins/meta.nix
+            [ -f docs/security-audit.json ] && git add docs/security-audit.json
             git commit -F /tmp/msg.txt
             git push -u origin "$BRANCH"
           elif [ "$HAS_FAIL" = "false" ]; then
-            git add repos/plugins/manifest.json \
-              repos/plugins/meta.nix \
-              docs/security-audit.json || true
+            git add repos/plugins/manifest.json
+            [ -f repos/plugins/meta.nix ] && git add repos/plugins/meta.nix
+            [ -f docs/security-audit.json ] && git add docs/security-audit.json
             cat > /tmp/fallback-msg.txt << 'MSG'
             feat(plugins): add newly discovered plugins
 
@@ -166,13 +167,16 @@ jobs:
             git push -u origin "$BRANCH"
           else
             echo "Security FAIL detected. Creating PR for review without manifest changes."
-            git add docs/security-audit.json || true
-            git commit --allow-empty -F /tmp/msg.txt 2>/dev/null || \
+            [ -f docs/security-audit.json ] && git add docs/security-audit.json
+            if [ -f /tmp/msg.txt ]; then
+              git commit --allow-empty -F /tmp/msg.txt
+            else
               git commit --allow-empty -m "security: flag new plugins for human review [SECURITY FAIL]"
+            fi
             git push -u origin "$BRANCH"
           fi
 
-          NEW_PLUGINS=$(./repos/plugins/discover)
+          NEW_PLUGINS="${{ steps.discover.outputs.new_plugins }}"
           BODY="# New Kakoune Plugins\n\n"
 
           if [ "$HAS_FAIL" = "true" ]; then

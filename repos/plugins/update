@@ -17,12 +17,12 @@ plugins=$(jq -r 'keys[]' "$manifest")
 
 for plugin in $plugins; do
     meta=$(jq --arg p "$plugin" '.[$p]' "$manifest")
-    fetcher=$(echo "$meta" | jq -r '.fetcher')
-    current_rev=$(echo "$meta" | jq -r '.rev')
+    fetcher=$(jq -r '.fetcher' <<< "$meta")
+    current_rev=$(jq -r '.rev' <<< "$meta")
 
     if [ "$fetcher" = "github" ]; then
-        repo=$(echo "$meta" | jq -r '.repo')
-        branch=$(echo "$meta" | jq -r '.branch // "master"')
+        repo=$(jq -r '.repo' <<< "$meta")
+        branch=$(jq -r '.branch // "master"' <<< "$meta")
 
         feed=$(curl -fsL "https://github.com/$repo/commits/$branch.atom")
         commit_sha=$(echo "$feed" | grep -m1 '<id>tag:github.com,2008:Grit::Commit/' | sed 's/.*Commit\///; s/<\/id>//; s/ //g' || echo "")
@@ -62,7 +62,7 @@ for plugin in $plugins; do
         updated=$((updated + 1))
 
     elif [ "$fetcher" = "gitlab" ]; then
-        repo=$(echo "$meta" | jq -r '.repo')
+        repo=$(jq -r '.repo' <<< "$meta")
 
         commit_sha=$(curl -fsL "https://gitlab.com/api/v4/projects/$(printf '%s' "$repo" | jq -sRr @uri)/repository/commits?per_page=1" | jq -r '.[0].id')
 
@@ -72,7 +72,7 @@ for plugin in $plugins; do
         fi
 
         version_date=$(curl -fsL "https://gitlab.com/api/v4/projects/$(printf '%s' "$repo" | jq -sRr @uri)/repository/commits/$commit_sha" | jq -r '.committed_date' | cut -dT -f1)
-        digest=$(nix-prefetch-url --unpack "https://gitlab.com/$repo/-/archive/$commit_sha/$(basename "$repo")-$commit_sha.tar.gz")
+        digest=$(nix-prefetch-url --unpack "https://gitlab.com/$repo/-/archive/$commit_sha/${repo##*/}-$commit_sha.tar.gz")
 
         jq --arg p "$plugin" \
            --arg rev "$commit_sha" \
@@ -85,7 +85,7 @@ for plugin in $plugins; do
         updated=$((updated + 1))
 
     elif [ "$fetcher" = "git" ]; then
-        url=$(echo "$meta" | jq -r '.repo')
+        url=$(jq -r '.repo' <<< "$meta")
 
         info=$(nix-prefetch-git --no-deepClone "$url")
         rev=$(echo "$info" | jq -r '.rev')
