@@ -74,7 +74,7 @@ jobs:
              the plugin was previously audited with PASS and the upstream
              source has not changed, reuse the existing verdict.
           2. Otherwise, fetch all `.kak` files from the plugin's GitHub
-             source tree via `curl` using the owner/repo/rev from the
+             source tree via `curl` using the repo/rev from the
              manifest entry and apply the security review criteria.
           3. Write your verdict (`PASS`, `WARN`, or `FAIL`) and findings
              to `/tmp/security-report.json` as a JSON object keyed by
@@ -111,7 +111,7 @@ jobs:
           1. Merge its entry into repos/plugins/manifest.json, preserving
              all existing entries and maintaining valid JSON.
           2. Fetch the plugin's .kak source files from GitHub via curl
-             using the owner/repo/rev from the entry.
+             using the repo/rev from the entry.
           3. Check whether any .kak file contains a hardcoded path that
              will not resolve correctly from the Nix store -- specifically
              patterns like $kak_config/some-file, ~/.config/kak/..., or
@@ -119,11 +119,11 @@ jobs:
              install time that point to a file that ships with the plugin.
           4. If such a path exists and the target file is included in the
              plugin's source tree, add an entry to
-             repos/plugins/overrides.nix with a postInstall block using
+             repos/plugins/meta.nix with a postInstall block using
              substituteInPlace to rewrite it to the correct
              $out/share/kak/autoload/plugins/<name>/... path.
           5. If no hardcoded paths requiring rewriting are found, do not
-             add an entry to overrides.nix.
+             add an entry to meta.nix.
           6. Write the commit message to /tmp/msg.txt following AGENTS.md
              conventions (feat(plugins) scope, two-paragraph body,
              Generated-with trailer).
@@ -147,13 +147,13 @@ jobs:
 
           if [ "$HAS_FAIL" = "false" ] && [ -f /tmp/msg.txt ]; then
             git add repos/plugins/manifest.json \
-              repos/plugins/overrides.nix \
+              repos/plugins/meta.nix \
               docs/security-audit.json || true
             git commit -F /tmp/msg.txt
             git push -u origin "$BRANCH"
           elif [ "$HAS_FAIL" = "false" ]; then
             git add repos/plugins/manifest.json \
-              repos/plugins/overrides.nix \
+              repos/plugins/meta.nix \
               docs/security-audit.json || true
             cat > /tmp/fallback-msg.txt << 'MSG'
             feat(plugins): add newly discovered plugins
@@ -184,9 +184,8 @@ jobs:
 
           while IFS= read -r name; do
             meta=$(jq --arg n "$name" '.[$n]' /tmp/new-plugins.json)
-            owner=$(echo "$meta" | jq -r '.owner')
             repo=$(echo "$meta" | jq -r '.repo')
-            BODY="${BODY}### ${name} (${owner}/${repo})\n\n"
+            BODY="${BODY}### ${name} (${repo})\n\n"
 
             if [ -f /tmp/security-report.json ]; then
               verdict=$(jq -r --arg n "$name" '.[$n].verdict // "PASS"' /tmp/security-report.json)
@@ -201,7 +200,7 @@ jobs:
             BODY="${BODY}- [ ] manifest entry looks correct (rev, sha256, branch)\n"
             BODY="${BODY}- [ ] .kak source reviewed for hardcoded paths "
             BODY="${BODY}requiring store rewrites\n"
-            BODY="${BODY}- [ ] overrides.nix entry present only if a path "
+            BODY="${BODY}- [ ] meta.nix entry present only if a path "
             BODY="${BODY}rewrite is genuinely needed\n"
             BODY="${BODY}- [ ] nix flake check passes (CI)\n\n"
           done <<< "$NEW_PLUGINS"

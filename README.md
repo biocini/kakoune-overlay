@@ -199,9 +199,9 @@ To add a plugin manually, edit `repos/plugins/manifest.json`:
 ```json
 {
   "my-new-plugin": {
-    "type": "github",
-    "owner": "github-user",
-    "repo": "my-repo",
+    "fetcher": "github",
+    "repo": "github-user/my-repo",
+    "branch": "master",
     "rev": "abc123...",
     "sha256": "sha256-...",
     "version": "2024-01-15"
