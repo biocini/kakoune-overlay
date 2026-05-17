@@ -119,9 +119,17 @@ Entries are only needed when a plugin requires non-default behavior:
 
 Plugins that need nothing extra are not listed in `meta.nix`.
 
+## Formatting
+
+Run `nix fmt` **before** `nix flake check`. The formatter (`nixfmt-rfc-style`)
+is declared in `flake.nix` and applies to all `.nix` files. Do not stage
+files for commit until formatting is clean and `nix flake check --all-systems`
+passes.
+
 ## Verification
 
-Before declaring local changes complete, run `nix flake check --all-systems`.
+Before declaring local changes complete, run `nix fmt` then
+`nix flake check --all-systems`.
 
 For PRs opened by the new-plugin workflow, CI runs `nix flake check`
 automatically — do not run it manually in the workflow.

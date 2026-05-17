@@ -27,6 +27,8 @@
     {
       overlays.default = import ./overlay.nix;
 
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
+
       packages = forAllSystems (
         system:
         let
